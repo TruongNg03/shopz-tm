@@ -1,0 +1,11 @@
+* {
+    scroll-behavior: smooth;
+}
+
+.wrapper-default {
+    background: linear-gradient(90deg, #e2e2e2, #c9d6ff);
+}
+
+.content {
+    padding-top: var(--default-header-height);
+}

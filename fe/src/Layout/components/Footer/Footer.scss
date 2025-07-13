@@ -1,0 +1,29 @@
+.footer {
+    background-color: #f0f0f0;
+
+    a {
+        padding-left: 0;
+        font-size: 1.5rem;
+        font-weight: normal;
+        color: #212529;
+    }
+}
+
+.top-btn {
+    background-color: #f8f8f8 !important;
+    color: #333 !important;
+
+    &:hover {
+        background-color: #e0e0e0 !important;
+        transition-duration: 0.3s;
+        transition-timing-function: ease-in-out;
+    }
+}
+
+.footer-border {
+    border-top: 2px solid #e0e0e0 !important;
+}
+
+.footer-bottom {
+    padding: 20px 0;
+}

@@ -1,0 +1,19 @@
+.search-item {
+    padding: 6px 12px;
+    color: #333;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #eff2ff;
+    }
+
+    &:hover .content-item {
+        font-weight: bold;
+    }
+}
+
+.img-item {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+}

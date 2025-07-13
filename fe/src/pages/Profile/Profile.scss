@@ -1,0 +1,26 @@
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+}
+
+.change-pf-btn {
+    &:hover {
+        color: #657ef8 !important;
+    }
+}
+.update-pf-btn {
+    max-width: 120px;
+    background-color: #e5eaff !important;
+    color: #6680ff !important;
+
+    &:hover {
+        background-color: #6680ff !important;
+        color: #fff !important;
+    }
+
+    &:active {
+        background-color: #3d55cc !important;
+        color: #fff !important;
+    }
+}

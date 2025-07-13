@@ -1,0 +1,40 @@
+// content menu
+.content-menu-tooltip {
+    padding: 4px;
+    padding-bottom: 8px;
+}
+
+// menu item
+.menu-tooltip-item {
+    height: 40px;
+    padding: 0px 16px;
+    font-size: 1.45rem;
+    border-radius: 8px;
+
+    &.separate {
+        margin-bottom: 8px;
+        border-bottom: 2px solid #f1f4f9;
+    }
+
+    &:hover {
+        color: var(--default-hover-color);
+        background-color: var(--default-hover-bg);
+    }
+}
+
+// list sp items
+.list-sp-items {
+    width: 214px;
+}
+
+.sp-item {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 1.45rem;
+    border-radius: 8px;
+
+    &:hover {
+        color: var(--default-hover-color);
+        background-color: var(--default-hover-bg);
+    }
+}

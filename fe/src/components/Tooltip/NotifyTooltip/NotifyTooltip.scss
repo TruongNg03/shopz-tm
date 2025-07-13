@@ -1,0 +1,28 @@
+.header-notify-tooltip {
+    height: 56px;
+    padding: 0 16px;
+}
+
+.content-notify-tooltip {
+    padding-bottom: 48px;
+
+    .img-no-data {
+        width: 200px;
+        height: 150px;
+    }
+}
+
+.btn-notify-tooltip {
+    background-color: #e5eaff !important;
+    color: #6680ff !important;
+    padding: 0 16px !important;
+
+    &:hover {
+        background-color: #6680ff !important;
+        color: #fff !important;
+    }
+
+    &:active {
+        background-color: #3d55cc !important;
+    }
+}

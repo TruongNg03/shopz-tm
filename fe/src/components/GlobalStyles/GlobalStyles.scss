@@ -1,0 +1,59 @@
+@import '~bootstrap/scss/bootstrap';
+
+:root {
+    // font style
+    --font-family: Arial, Helvetica, sans-serif;
+
+    --default-header-height: 60px;
+    --default-hover-bg: #eff2ff;
+    --default-hover-color: #6680ff;
+
+    // default scrollbar color
+    --default-scrollbar-color-new: rgba(0, 0, 0, 0.25);
+    --default-scrollbar-color-hover: rgba(0, 0, 0, 0.4);
+
+    // default sidebar margin
+    --default-sidebar-margin-left: 256px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: 1.6rem;
+    line-height: 1.5;
+    text-rendering: optimizeSpeed;
+    overflow-y: overlay;
+}
+
+// scrollbar
+html *::-webkit-scrollbar {
+    width: 16px;
+}
+
+html *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--default-scrollbar-color-hover);
+}
+
+html *::-webkit-scrollbar-thumb {
+    background-color: var(--default-scrollbar-color-new);
+    border-radius: 9px;
+    border: 4px solid transparent;
+    background-clip: content-box;
+}
+
+html *::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+html *::-webkit-scrollbar-track-piece {
+    background-color: transparent;
+}

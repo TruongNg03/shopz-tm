@@ -1,0 +1,28 @@
+.nav-item {
+    button {
+        padding-inline: 30px;
+    }
+}
+
+.detail-product {
+    list-style-type: '- ';
+    opacity: 0.8;
+}
+
+.form-review {
+    max-width: 50%;
+}
+
+.view-specification-btn {
+    background-color: #6680ff !important;
+    color: #e5eaff !important;
+
+    &:hover {
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 6px;
+    }
+
+    &:active {
+        background-color: #3d55cc !important;
+        color: #fff !important;
+    }
+}
