@@ -8,6 +8,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Offcanvas from 'react-bootstrap/Offcanvas';
+import { NavLink } from 'react-router-dom';
 
 import Tippy from '@tippyjs/react/headless';
 import images from '~/assets/images';
@@ -15,6 +16,8 @@ import { Wrapper as TooltipWrapper } from '~/components/Tooltip';
 import SearchItem from '~/components/SearchItem';
 import NotifyTooltip from '~/components/Tooltip/NotifyTooltip';
 import MenuTooltip from '~/components/Tooltip/MenuTooltip/MenuTooltip';
+import NavLinkItem from '~/components/NavLinkItem';
+import config from '~/config';
 
 function Header() {
     // example
@@ -48,6 +51,7 @@ function Header() {
         },
         {
             title: 'Đăng nhập',
+            to: config.routes.signIn,
         },
         // {
         //     title: 'Đăng xuất',
@@ -89,16 +93,12 @@ function Header() {
                             </Offcanvas.Title>
                         </Offcanvas.Header>
                         <Offcanvas.Body className="align-items-center justify-content-end flex-grow-1">
-                            <Nav
-                                className="justify-content-start align-items-center flex-grow-1 column-gap-1 me-4 text-center"
-                                // variant="underline"
-                                defaultActiveKey="/"
-                            >
-                                <Nav.Link href="/">Trang chủ</Nav.Link>
-                                <Nav.Link href="#action2">Feedback</Nav.Link>
-                                <Nav.Link href="#action3">Action3</Nav.Link>
-                                <Nav.Link href="#action4">Action4</Nav.Link>
-                            </Nav>
+                            <div className="d-flex flex-row justify-content-start align-items-center flex-grow-1 column-gap-1 me-4 text-center">
+                                <NavLinkItem className="header-nav-link" title="Trang chủ" to="/" />
+                                <NavLinkItem className="header-nav-link" title="Feedback" to="/feedback" />
+                                <NavLinkItem className="header-nav-link" title="Action3" to="/action3" />
+                                <NavLinkItem className="header-nav-link" title="Action4" to="/action4" />
+                            </div>
 
                             <Form className="search position-relative mx-4">
                                 <div className="search-wrapper-tooltip">
@@ -140,7 +140,7 @@ function Header() {
                                                 header="Thông báo"
                                                 content="Log in to discover more interesting content"
                                                 nameBtn="Đăng nhập"
-                                                linkTo="./#login"
+                                                linkTo="/sign-in"
                                             />
                                         )}
                                     >

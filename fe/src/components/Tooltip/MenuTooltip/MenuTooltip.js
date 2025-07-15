@@ -22,6 +22,7 @@ function MenuTooltip({ header, data = [{}], onClick }) {
                             // icon={<FontAwesomeIcon icon={faBell} />}
                             // children={item.children}
                             separate={item.separate}
+                            to={item.to}
                             onClick={onClick}
                         />
                     );

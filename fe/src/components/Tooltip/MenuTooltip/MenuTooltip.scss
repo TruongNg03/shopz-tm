@@ -17,8 +17,11 @@
     }
 
     &:hover {
-        color: var(--default-hover-color);
         background-color: var(--default-hover-bg);
+
+        p {
+            color: var(--default-hover-color);
+        }
     }
 }
 
