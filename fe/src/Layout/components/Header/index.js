@@ -8,7 +8,6 @@ import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Offcanvas from 'react-bootstrap/Offcanvas';
-import { NavLink } from 'react-router-dom';
 
 import Tippy from '@tippyjs/react/headless';
 import images from '~/assets/images';
@@ -19,49 +18,49 @@ import MenuTooltip from '~/components/Tooltip/MenuTooltip/MenuTooltip';
 import NavLinkItem from '~/components/NavLinkItem';
 import config from '~/config';
 
+// menu
+const MENU_ITEMS = [
+    {
+        title: 'Đổi ngôn ngữ',
+        children: [
+            { type: 'language', data: 'Tiếng Anh', checked: false },
+            { type: 'language', data: 'Tiếng Việt', checked: true },
+            { type: 'language', data: 'Tiếng Nhật', checked: false },
+        ],
+    },
+    {
+        title: 'Cài đặt hiển thị',
+        children: [
+            { type: 'display', data: 'Chế độ sáng', checked: true },
+            { type: 'display', data: 'chể độ tối', checked: false },
+        ],
+        separate: true,
+    },
+    {
+        title: 'Đăng nhập',
+        to: config.routes.signIn,
+    },
+    // {
+    //     title: 'Đăng xuất',
+    //     to: config.routes.login,
+    //     separate: true,
+    // },
+];
+
+const sizeExpandNavbar = 'md';
+/* 'sm', 'md', 'lg', 'xl', 'xxl' */
+
 function Header() {
     // example
     const [searchResult, setSearchResult] = useState([
-        { linkImg: images.defAvatar, contentItem: 'content', to: '/#action' },
-        { linkImg: images.defAvatar, contentItem: 'content', to: '/#action' },
-        { linkImg: images.defAvatar, contentItem: 'content', to: '/#action' },
-        { linkImg: images.defAvatar, contentItem: 'content', to: '/#action' },
-        { linkImg: images.defAvatar, contentItem: 'content', to: '/#action' },
-        { linkImg: images.defAvatar, contentItem: 'content', to: '/#action' },
-        { linkImg: images.defAvatar, contentItem: 'content', to: '/#action' },
+        { linkImg: images.faruzanCat, contentItem: 'content', to: config.routes.testProduct },
+        { linkImg: images.faruzanCat, contentItem: 'content', to: config.routes.testProduct },
+        { linkImg: images.faruzanCat, contentItem: 'content', to: config.routes.testProduct },
+        { linkImg: images.faruzanCat, contentItem: 'content', to: config.routes.testProduct },
+        { linkImg: images.faruzanCat, contentItem: 'content', to: config.routes.testProduct },
+        { linkImg: images.faruzanCat, contentItem: 'content', to: config.routes.testProduct },
+        { linkImg: images.faruzanCat, contentItem: 'content', to: config.routes.testProduct },
     ]);
-
-    // menu
-    const MENU_ITEMS = [
-        {
-            title: 'Đổi ngôn ngữ',
-            children: [
-                { type: 'language', data: 'Tiếng Anh', checked: false },
-                { type: 'language', data: 'Tiếng Việt', checked: true },
-                { type: 'language', data: 'Tiếng Nhật', checked: false },
-            ],
-        },
-        {
-            title: 'Cài đặt hiển thị',
-            children: [
-                { type: 'display', data: 'Chế độ sáng', checked: true },
-                { type: 'display', data: 'chể độ tối', checked: false },
-            ],
-            separate: true,
-        },
-        {
-            title: 'Đăng nhập',
-            to: config.routes.signIn,
-        },
-        // {
-        //     title: 'Đăng xuất',
-        //     to: config.routes.login,
-        //     separate: true,
-        // },
-    ];
-
-    const sizeExpandNavbar = 'md';
-    /* 'sm', 'md', 'lg', 'xl', 'xxl' */
 
     // cart, notify, user button
     const CNUButton = forwardRef((props, ref) => {
@@ -110,7 +109,7 @@ function Header() {
                                             <div className="search-result" tabIndex={-1} {...attr}>
                                                 <TooltipWrapper searchTooltip>
                                                     {searchResult.map((data, key) => {
-                                                        return <SearchItem key={data.to + ` ${key++}`} data={data} />;
+                                                        return <SearchItem key={key++} data={data} />;
                                                     })}
                                                 </TooltipWrapper>
                                             </div>
@@ -140,7 +139,7 @@ function Header() {
                                                 header="Thông báo"
                                                 content="Log in to discover more interesting content"
                                                 nameBtn="Đăng nhập"
-                                                linkTo="/sign-in"
+                                                linkTo={config.routes.signIn}
                                             />
                                         )}
                                     >

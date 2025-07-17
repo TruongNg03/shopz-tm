@@ -1,0 +1,17 @@
+.admin-search-label {
+    max-width: 350px;
+}
+
+.admin-search-result {
+    background: var(--default-bg-color);
+}
+
+@media (max-width: 992px) {
+    .admin-search {
+        flex-direction: column;
+    }
+
+    .admin-search-label {
+        max-width: none;
+    }
+}

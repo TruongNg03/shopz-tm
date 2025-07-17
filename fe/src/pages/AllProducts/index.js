@@ -103,7 +103,14 @@ function AllProducts() {
                 </span>
                 <div className="list-result">
                     {PRODUCT_ITEMS.map((product, key) => {
-                        return <ProductItem key={key++} product={product} showOverView={false} />;
+                        return (
+                            <ProductItem
+                                key={key++}
+                                product={product}
+                                showOverView={false}
+                                separate={key < PRODUCT_ITEMS.length - 1}
+                            />
+                        );
                     })}
                 </div>
             </div>

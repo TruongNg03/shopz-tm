@@ -1,5 +1,6 @@
 .product-item {
     display: flex;
+    justify-content: space-between;
 }
 
 .product-img {
@@ -11,7 +12,7 @@
 }
 
 .overview {
-    max-width: 700px;
+    max-width: 750px;
 }
 
 .product-info {
