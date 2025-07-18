@@ -36,7 +36,14 @@ function AdminUsers() {
     };
 
     const handleSearch = () => {
-        console.log(USERS.filter((user) => user.email.includes(searchUser)));
+        console.log(
+            USERS.filter(
+                (user) =>
+                    user.email.includes(searchUser) ||
+                    user.username.includes(searchUser) ||
+                    user.phone.includes(searchUser),
+            ),
+        );
     };
 
     return (
@@ -47,7 +54,7 @@ function AdminUsers() {
                     <Form.Control
                         className="admin-search-label p-3 fs-4 rounded-4"
                         type="search"
-                        placeholder="Tìm kiếm..."
+                        placeholder="Tìm kiếm theo tên, emal, sđt..."
                         aria-label="Search"
                         onChange={handleChangeSearch}
                     />
