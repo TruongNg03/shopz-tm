@@ -1,6 +1,7 @@
 import './Sidebar.scss';
-import SidebarItem from './SidebarItem';
-import config from '~/config';
+import { useState } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { Modal, Button } from 'react-bootstrap';
 import {
     faArrowRightFromBracket,
     faBoxOpen,
@@ -9,9 +10,24 @@ import {
     faHouse,
     faUser,
 } from '@fortawesome/free-solid-svg-icons';
+import SidebarItem from './SidebarItem';
+import config from '~/config';
 import images from '~/assets/images';
 
 function Sidebar() {
+    const navigate = useNavigate();
+
+    const [showLogoutForm, setShowLogoutForm] = useState(false);
+
+    const handleCloseLogoutForm = () => setShowLogoutForm(false);
+    const handleShowLogoutForm = () => setShowLogoutForm(true);
+
+    // logout
+    const handleLogout = () => {
+        window.localStorage.clear();
+        navigate('/');
+    };
+
     return (
         <div className="sidebar position-fixed h-100">
             {/* change m -> p */}
@@ -23,8 +39,28 @@ function Sidebar() {
                 <SidebarItem to={config.routes.adminUsers} title="Người dùng" icon={faUser} />
                 <SidebarItem to={config.routes.adminOrders} title="Đơn hàng" icon={faCartShopping} />
                 <SidebarItem to={config.routes.adminFeedbacks} title="Phản hồi" icon={faComment} />
-                <SidebarItem to={'/admin/home/#about'} title="Đăng xuất" icon={faArrowRightFromBracket} />
+                <SidebarItem
+                    title="Đăng xuất"
+                    icon={faArrowRightFromBracket}
+                    notActive
+                    onClick={handleShowLogoutForm}
+                />
             </div>
+
+            <Modal show={showLogoutForm} onHide={handleCloseLogoutForm} keyboard={false}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Đăng xuất</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Bạn có muốn đăng xuất không?</Modal.Body>
+                <Modal.Footer>
+                    <Button className="fs-4" variant="secondary" onClick={handleCloseLogoutForm}>
+                        Hủy
+                    </Button>
+                    <Button className="fs-4" variant="primary" onClick={handleLogout}>
+                        Có
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }
