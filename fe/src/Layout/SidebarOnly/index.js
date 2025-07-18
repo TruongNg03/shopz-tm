@@ -5,7 +5,9 @@ function SidebarOnly({ children }) {
     return (
         <div className="wrapper-sidebar-only">
             <Sidebar />
-            <div className="content-sidebar-only min-vh-100">{children}</div>
+            <div className="content-sidebar-only min-vh-100 p-5">
+                <div className="container">{children}</div>
+            </div>
         </div>
     );
 }

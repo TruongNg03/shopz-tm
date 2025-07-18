@@ -55,7 +55,7 @@ function Cart() {
 
                 <div className="list-summary">
                     <div className="list-carts flex-grow-1 p-3 rounded-2">
-                        <Table striped hover>
+                        <Table className="bg-transparent m-0" striped hover>
                             <thead>
                                 <tr>
                                     <th style={{ textAlign: 'left' }}>Sản phẩm của bạn</th>
