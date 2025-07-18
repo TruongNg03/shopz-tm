@@ -182,17 +182,21 @@ function AdminProducts() {
                 </div>
 
                 <div className="admin-search-result mt-4 p-3 rounded-4">
-                    {PRODUCT_ITEMS.map((product, key) => {
-                        return (
-                            <ProductItem
-                                key={key++}
-                                product={product}
-                                showOverView={false}
-                                separate={key < PRODUCT_ITEMS.length - 1}
-                                admin
-                            />
-                        );
-                    })}
+                    {PRODUCT_ITEMS.length > 0 ? (
+                        PRODUCT_ITEMS.map((product, key) => {
+                            return (
+                                <ProductItem
+                                    key={key++}
+                                    product={product}
+                                    showOverView={false}
+                                    separate={key < PRODUCT_ITEMS.length - 1}
+                                    admin
+                                />
+                            );
+                        })
+                    ) : (
+                        <p className="m-0 text-center">Chưa có sản phẩm nào</p>
+                    )}
                 </div>
             </div>
         </div>

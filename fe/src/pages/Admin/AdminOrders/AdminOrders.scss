@@ -1,0 +1,13 @@
+.admin-order-result {
+    background: var(--default-bg-color);
+
+    th,
+    td {
+        vertical-align: middle;
+    }
+}
+
+.admin-order-img {
+    max-width: 120px;
+    max-height: 120px;
+}
