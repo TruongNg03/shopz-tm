@@ -31,6 +31,12 @@ function SignIn() {
         password: undefined,
     });
 
+    const [registerUser, setRegisterUser] = useState({
+        email: undefined,
+        username: undefined,
+        password: undefined,
+    });
+
     const { loading, error, dispatch } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -44,7 +50,7 @@ function SignIn() {
         setShowAlertText(false);
     };
 
-    // get data input
+    // get data login input
     const getLoginEmail = (e) => {
         setLoginUser({
             ...loginUser,
@@ -55,6 +61,28 @@ function SignIn() {
     const getLoginPassword = (e) => {
         setLoginUser({
             ...loginUser,
+            password: e.target.value,
+        });
+    };
+
+    // get data register input
+    const getRegisterEmail = (e) => {
+        setRegisterUser({
+            ...registerUser,
+            email: e.target.value.toLowerCase(),
+        });
+    };
+
+    const getRegisterUsername = (e) => {
+        setRegisterUser({
+            ...registerUser,
+            username: e.target.value,
+        });
+    };
+
+    const getRegisterPassword = (e) => {
+        setRegisterUser({
+            ...registerUser,
             password: e.target.value,
         });
     };
@@ -96,7 +124,7 @@ function SignIn() {
         e.preventDefault();
 
         // check data
-        console.log('User login:', loginUser.email);
+        console.log('User login:', { email: loginUser.email });
 
         if (checkEmail(loginUser.email) && checkPassword(loginUser.password)) {
             dispatch({ type: 'LOGIN_START' });
@@ -117,7 +145,27 @@ function SignIn() {
     };
 
     // register
-    const handleRegisterAccount = () => {};
+    const handleRegisterAccount = async (e) => {
+        e.preventDefault();
+        // check data
+        console.log('User register:', { email: registerUser.email, username: registerUser.username });
+
+        if (checkEmail(registerUser.email) && checkPassword(registerUser.password)) {
+            dispatch({ type: 'LOGIN_START' });
+
+            try {
+                const res = await httpRequest.post('auth/register', registerUser);
+                dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
+
+                console.log(res);
+
+                window.location.reload(false);
+            } catch (err) {
+                dispatch({ type: 'LOGIN_FAILURE', payload: err.response.data });
+                setShowError(true);
+            }
+        }
+    };
 
     // show error in 1s
     useEffect(() => {
@@ -172,16 +220,19 @@ function SignIn() {
                 <form action="">
                     <h1>Registration</h1>
                     <div className="input-box">
-                        <input type="email" placeholder="Email" required />
+                        <input type="email" placeholder="Email" onChange={getRegisterEmail} required />
                         <FontAwesomeIcon className="input-icon" icon={faEnvelope} />
                     </div>
                     <div className="input-box">
-                        <input type="text" placeholder="Username" required />
+                        <input type="text" placeholder="Username" onChange={getRegisterUsername} required />
                         <FontAwesomeIcon className="input-icon" icon={faUser} />
                     </div>
                     <div className="input-box">
-                        <input type="password" placeholder="Password" required />
+                        <input type="password" placeholder="Password" onChange={getRegisterPassword} required />
                         <FontAwesomeIcon className="input-icon" icon={faLock} />
+                    </div>
+                    <div className="alert-text">
+                        {showAlertText && <p className="mt-0 text-danger">{userAlertText}</p>}
                     </div>
                     <button type="submit" className="submit-btn" onClick={handleRegisterAccount}>
                         Register

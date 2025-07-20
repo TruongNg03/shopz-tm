@@ -9,6 +9,7 @@ const User = new Schema(
     password: { type: String, require: true },
     username: { type: String, default: null },
     phone: { type: String, default: null },
+    banned: { type: Boolean, default: false },
     // type ['user', 'admin']
     role: { type: String, default: 'user' },
   },

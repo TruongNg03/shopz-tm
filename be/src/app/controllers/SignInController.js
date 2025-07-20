@@ -19,22 +19,14 @@ class SignInController {
       .then((user) => {
         if (user) {
           return res.status(400).json({ message: 'Tài khoản đã tồn tại!' });
+        } else {
+          // create new account
+          newUser
+            .save()
+            .then((user) => res.status(200).json(`${user.email} has been created!`))
+            .catch(next);
         }
       })
-      .catch(next);
-
-    User.findOneWithDeleted({ deleted: true, email: req.body.email })
-      .then((user) => {
-        if (user) {
-          return res.status(400).json({ message: 'Tài khoản đã bị khóa!' });
-        }
-      })
-      .catch(next);
-
-    // create new account
-    newUser
-      .save()
-      .then((user) => res.status(200).json(`${user.email} has been created!`))
       .catch(next);
   }
 
@@ -46,17 +38,13 @@ class SignInController {
     User.findOne({ email: req.body.email })
       .then((user) => {
         if (!user) {
-          // check in deleted account
-          User.findDeleted({ deleted: true, email: currUserLogin.email })
-            .then((deletedUser) => {
-              if (deletedUser.length) {
-                return res.status(400).json({ message: 'Tài khoản đã bị khóa!' });
-              } else {
-                return res.status(400).json({ message: 'Tài khoản không tồn tại!' });
-              }
-            })
-            .catch(next);
+          return res.status(400).json({ message: 'Tài khoản không tồn tại!' });
         } else {
+          // check banned account
+          if (user.banned) {
+            return res.status(400).json({ message: 'Tài khoản đã bị khóa!' });
+          }
+
           bcrypt
             .compare(currUserLogin.password, user.password)
             .then((result) => {
