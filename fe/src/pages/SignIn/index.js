@@ -18,6 +18,8 @@ function validateEmail(email) {
 }
 
 function SignIn() {
+    const { user } = useContext(AuthContext);
+
     const [showError, setShowError] = useState(false);
     const [showAlertText, setShowAlertText] = useState(false);
     const [userAlertText, setUserAlertText] = useState('');
@@ -150,18 +152,17 @@ function SignIn() {
         // check data
         console.log('User register:', { email: registerUser.email, username: registerUser.username });
 
+        // login directly: change REGISTER -> LOGIN
         if (checkEmail(registerUser.email) && checkPassword(registerUser.password)) {
-            dispatch({ type: 'LOGIN_START' });
+            dispatch({ type: 'REGISTER_START' });
 
             try {
                 const res = await httpRequest.post('auth/register', registerUser);
-                dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
-
-                console.log(res);
+                dispatch({ type: 'REGISTER_SUCCESS', payload: res.data });
 
                 window.location.reload(false);
             } catch (err) {
-                dispatch({ type: 'LOGIN_FAILURE', payload: err.response.data });
+                dispatch({ type: 'REGISTER_FAILURE', payload: err.response.data });
                 setShowError(true);
             }
         }
@@ -270,6 +271,13 @@ function SignIn() {
             {error && showError && (
                 <div className={cx('error-message user-select-none')}>
                     <p>{error.message}</p>
+                </div>
+            )}
+
+            {/* show alert when logged in */}
+            {user && (
+                <div className={cx('error-message user-select-none')}>
+                    <h1 className="fs-2">Bạn đã đăng nhập</h1>
                 </div>
             )}
         </div>
