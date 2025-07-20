@@ -1,14 +1,26 @@
-import { Fragment } from 'react';
+import { Fragment, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { publicRoutes, privateRoutes } from '~/routes';
+import { publicRoutes, privateRoutes, adminRoutes } from '~/routes';
 import { DefaultLayout } from './Layout';
+import { AuthContext } from '~/context/AuthContext';
 
 function App() {
+    const { user } = useContext(AuthContext);
+
+    // user routes
+    const priRoutes = user ? privateRoutes : [];
+    // admin routes
+    const admRoutes = user ? (user.role === 'admin' ? adminRoutes : []) : [];
+
+    // get all routes
+    const allRoutes = [...publicRoutes, ...priRoutes, ...admRoutes];
+    // console.log(allRoutes);
+
     return (
         <Router>
             <div className="App">
                 <Routes>
-                    {publicRoutes.map((route, index) => {
+                    {allRoutes.map((route, index) => {
                         const Page = route.component;
 
                         let Layout = DefaultLayout;

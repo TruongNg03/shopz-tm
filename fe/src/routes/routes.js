@@ -27,7 +27,6 @@ import AdminFeedbacks from '~/pages/Admin/AdminFeedbacks';
 const publicRoutes = [
     { path: config.routes.home, component: Home },
     { path: config.routes.cart, component: Cart },
-    { path: config.routes.profile, component: Profile },
     { path: config.routes.laptop, component: Laptop },
     { path: config.routes.phone, component: Phone },
     { path: config.routes.monitor, component: Monitor },
@@ -36,16 +35,18 @@ const publicRoutes = [
     { path: config.routes.testProduct, component: SpecificationProduct },
     { path: config.routes.feedback, component: Feedback },
     { path: config.routes.signIn, component: SignIn, layout: HeaderOnly },
-    // admin routes
+    // not found route
+    { path: '*', component: NotFoundPage },
+];
+
+const privateRoutes = [{ path: config.routes.profile, component: Profile }];
+
+const adminRoutes = [
     { path: config.routes.adminHome, component: AdminHome, layout: SidebarOnly },
     { path: config.routes.adminProducts, component: AdminProducts, layout: SidebarOnly },
     { path: config.routes.adminUsers, component: AdminUsers, layout: SidebarOnly },
     { path: config.routes.adminOrders, component: AdminOrders, layout: SidebarOnly },
     { path: config.routes.adminFeedbacks, component: AdminFeedbacks, layout: SidebarOnly },
-    // not found route
-    { path: '*', component: NotFoundPage },
 ];
 
-const privateRoutes = [];
-
-export { publicRoutes, privateRoutes };
+export { publicRoutes, privateRoutes, adminRoutes };

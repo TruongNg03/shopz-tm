@@ -75,7 +75,7 @@ class SignInController {
                   httpOnly: true,
                 })
                 .status(200)
-                .json({ email: user.email, token: token });
+                .json({ email: user.email, role: user.role, token: token });
             })
             .catch(next);
         }
