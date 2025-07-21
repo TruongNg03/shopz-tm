@@ -11,7 +11,7 @@ const Product = new Schema(
     nameProduct: { type: String, require: true, default: 'Name Product' },
     numProduct: { type: Number, default: 0 },
     typeProduct: { type: String, default: 'Default type product' },
-    branch: { type: String, default: 'Default branch' },
+    brand: { type: String, default: 'Default brand' },
     partNumber: { type: String, require: true, default: 'AA.AAAAA.000', unique: true },
     price: { type: String, default: '0' },
     status: { type: String, default: 'Có hàng' },

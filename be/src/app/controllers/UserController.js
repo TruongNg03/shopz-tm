@@ -7,9 +7,9 @@ class UserController {
 
     const filter = {
       ...(id && { _id: id }),
-      ...(email && { email: email }),
-      ...(username && { username: username }),
-      ...(phone && { phone: phone }),
+      ...(email && { email: { $regex: email, $options: 'i' } }),
+      ...(username && { username: { $regex: username, $options: 'i' } }),
+      ...(phone && { phone: { $regex: phone, $options: 'i' } }),
       ...(banned && { banned: banned }),
     };
 

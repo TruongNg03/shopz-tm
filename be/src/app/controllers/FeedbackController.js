@@ -6,8 +6,8 @@ class FeedbackController {
     const { email, username } = req.query;
 
     const filter = {
-      ...(email && { email: email }),
-      ...(username && { username: username }),
+      ...(email && { email: { $regex: email, $options: 'i' } }),
+      ...(username && { username: { $regex: username, $options: 'i' } }),
     };
 
     // log query
