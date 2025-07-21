@@ -1,14 +1,14 @@
 const Product = require('../models/Product');
 
 class ProductController {
-  // [GET] /products?id=...type='...'&branch='...'
+  // [GET] /products?id=...type='...'&brand='...'
   getProducts(req, res, next) {
-    const { id, type, branch } = req.query;
+    const { id, type, brand } = req.query;
 
     const filter = {
       ...(id && { _id: id }),
       ...(type && { typeProduct: type }),
-      ...(branch && { branch: branch }),
+      ...(brand && { brand: brand }),
     };
 
     // log query
