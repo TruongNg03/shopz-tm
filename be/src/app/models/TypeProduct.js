@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 
 const TypeProduct = new Schema(
   {
-    typeProduct: { type: String, require: true, default: 'Default Type Product' },
+    name: { type: String, require: true, default: 'Default Type Product' },
   },
   {
     timestamps: true,

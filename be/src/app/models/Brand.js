@@ -3,18 +3,18 @@ const mongooseDelete = require('mongoose-delete');
 
 const Schema = mongoose.Schema;
 
-const Branch = new Schema(
+const Brand = new Schema(
   {
-    branch: { type: String, require: true, default: 'Default Branch' },
+    name: { type: String, require: true, default: 'Default Brand', unique: true },
   },
   {
     timestamps: true,
   },
 );
 
-Branch.plugin(mongooseDelete, {
+Brand.plugin(mongooseDelete, {
   deletedAt: true,
   overrideMethods: 'all',
 });
 
-module.exports = mongoose.model('Branch', Branch);
+module.exports = mongoose.model('Brand', Brand);
