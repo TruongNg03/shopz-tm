@@ -1,25 +1,18 @@
 const Product = require('../models/Product');
 
 class ProductController {
-  // get one product
-  // [GET] /products/:id
-  getOneProduct(req, res, next) {
-    Product.findOne({ _id: req.params.id })
-      .then((product) => {
-        res.status(200).json(product);
-      })
-      .catch(next);
-  }
-
-  // [GET] /products?type='...'&branch='...'
+  // [GET] /products?id=...type='...'&branch='...'
   getProducts(req, res, next) {
-    const { type, branch } = req.query;
-    // log query
-    console.log('--Find product query:', { typeProduct: type, branch: branch });
+    const { id, type, branch } = req.query;
+
     const filter = {
+      ...(id && { _id: id }),
       ...(type && { typeProduct: type }),
       ...(branch && { branch: branch }),
     };
+
+    // log query
+    console.log('--Find product query:', filter);
 
     Product.find(filter)
       .lean()

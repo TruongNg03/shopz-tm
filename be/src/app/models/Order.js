@@ -7,8 +7,8 @@ const Order = new Schema(
   {
     img: { type: String, require: true, default: 'img' },
     nameProduct: { type: String, require: true, default: 'Name Product' },
-    typeProduct: { type: String, default: '' },
-    branch: { type: String, default: '' },
+    typeProduct: { type: String, default: 'Default type product' },
+    branch: { type: String, default: 'Default Brand' },
     partNumber: { type: String, require: true, default: 'AA.AAAAA.000' },
     price: { type: String, require: true, default: '0' },
     numberProduct: { type: Number, default: 1 },
