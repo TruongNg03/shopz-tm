@@ -56,11 +56,14 @@ class SignInController {
               console.log('-- ' + user.email + ' login');
 
               // generate token
-              const token = jwt.sign({ _id: user._id, user: user.email }, process.env.JWT_SECRET, { expiresIn: '1d' });
+              const token = jwt.sign({ _id: user._id, user: user.email, role: user.role }, process.env.JWT_SECRET, {
+                expiresIn: '1d',
+              });
 
               res
                 .cookie('access_token', token, {
                   httpOnly: true,
+                  sameSite: 'strict',
                 })
                 .status(200)
                 .json({ email: user.email, role: user.role, token: token });

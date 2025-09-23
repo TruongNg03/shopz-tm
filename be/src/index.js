@@ -24,7 +24,11 @@ app.use(
 );
 app.use(express.json());
 
-app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:3333',
+  }),
+);
 app.use(cookieParser());
 
 // http logger
