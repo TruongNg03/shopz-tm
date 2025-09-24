@@ -9,8 +9,16 @@ export const get = async (path, option = {}) => {
         const response = await httpRequest.get(path, option);
         return response.data;
     } catch (error) {
-        console.error('GET request failed:', error.message);
-        return { error: true, message: 'Lỗi kết nối tới server' };
+        if (error.response) {
+            return {
+                error: true,
+                message: error.response.data?.message || 'Lỗi không xác định từ server',
+                status: error.response.status,
+            };
+        } else {
+            console.error('GET request failed:', error.message);
+            return { error: true, message: 'Lỗi kết nối tới server' };
+        }
     }
 };
 
@@ -19,38 +27,70 @@ export const post = async (path, data) => {
         const res = await httpRequest.post(path, data);
         return res;
     } catch (error) {
-        console.error('GET request failed:', error.message);
-        return { error: true, message: 'Lỗi kết nối tới server' };
+        if (error.response) {
+            return {
+                error: true,
+                message: error.response.data?.message || 'Lỗi không xác định từ server',
+                status: error.response.status,
+            };
+        } else {
+            console.error('GET request failed:', error.message);
+            return { error: true, message: 'Lỗi kết nối tới server' };
+        }
     }
 };
 
 export const put = async (path, data) => {
     try {
-        const res = await httpRequest.post(path, data);
+        const res = await httpRequest.put(path, data);
         return res;
     } catch (error) {
-        console.error('GET request failed:', error.message);
-        return { error: true, message: 'Lỗi kết nối tới server' };
+        if (error.response) {
+            return {
+                error: true,
+                message: error.response.data?.message || 'Lỗi không xác định từ server',
+                status: error.response.status,
+            };
+        } else {
+            console.error('GET request failed:', error.message);
+            return { error: true, message: 'Lỗi kết nối tới server' };
+        }
     }
 };
 
 export const patch = async (path, data) => {
     try {
-        const res = await httpRequest.post(path, data);
+        const res = await httpRequest.patch(path, data);
         return res;
     } catch (error) {
-        console.error('GET request failed:', error.message);
-        return { error: true, message: 'Lỗi kết nối tới server' };
+        if (error.response) {
+            return {
+                error: true,
+                message: error.response.data?.message || 'Lỗi không xác định từ server',
+                status: error.response.status,
+            };
+        } else {
+            console.error('GET request failed:', error.message);
+            return { error: true, message: 'Lỗi kết nối tới server' };
+        }
     }
 };
 
 export const deleted = async (path, data) => {
     try {
-        const res = await httpRequest.post(path, data);
+        const res = await httpRequest.delete(path, data);
         return res;
     } catch (error) {
-        console.error('GET request failed:', error.message);
-        return { error: true, message: 'Lỗi kết nối tới server' };
+        if (error.response) {
+            return {
+                error: true,
+                message: error.response.data?.message || 'Lỗi không xác định từ server',
+                status: error.response.status,
+            };
+        } else {
+            console.error('GET request failed:', error.message);
+            return { error: true, message: 'Lỗi kết nối tới server' };
+        }
     }
 };
 
