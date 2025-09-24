@@ -23,6 +23,7 @@ function SignIn() {
     const [showError, setShowError] = useState(false);
     const [showAlertText, setShowAlertText] = useState(false);
     const [userAlertText, setUserAlertText] = useState('');
+    const [errorText, setErrorText] = useState('');
 
     const [activeClass, setActiveClass] = useState(false);
     const classes = cx('sign-in', { active: activeClass });
@@ -133,9 +134,14 @@ function SignIn() {
 
             try {
                 const res = await httpRequest.post('auth/login', loginUser);
-                dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
 
-                console.log(res);
+                if (res.error) {
+                    setErrorText(res.message);
+                    setShowError(true);
+                    return;
+                }
+
+                dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
 
                 navigate('/');
                 window.location.reload(false);
@@ -158,6 +164,13 @@ function SignIn() {
 
             try {
                 const res = await httpRequest.post('auth/register', registerUser);
+
+                if (res.error) {
+                    setErrorText(res.message);
+                    setShowError(true);
+                    return;
+                }
+
                 dispatch({ type: 'REGISTER_SUCCESS', payload: res.data });
 
                 window.location.reload(false);
@@ -271,6 +284,13 @@ function SignIn() {
             {error && showError && (
                 <div className={cx('error-message user-select-none')}>
                     <p>{error.message}</p>
+                </div>
+            )}
+
+            {/* error text when db not work */}
+            {showError && (
+                <div className={cx('error-message user-select-none')}>
+                    <p>{errorText}</p>
                 </div>
             )}
 
