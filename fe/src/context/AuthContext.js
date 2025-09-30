@@ -61,7 +61,11 @@ export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
 
     useEffect(() => {
-        localStorage.setItem('shopz-tm-user', JSON.stringify(state.user));
+        if (state.user) {
+            localStorage.setItem('shopz-tm-user', JSON.stringify(state.user));
+        } else {
+            localStorage.removeItem('shopz-tm-user');
+        }
     }, [state.user]);
 
     return (

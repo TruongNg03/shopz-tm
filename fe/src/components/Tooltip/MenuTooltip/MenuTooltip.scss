@@ -11,33 +11,11 @@
     font-size: 1.45rem;
     border-radius: 8px;
 
-    &.separate {
-        margin-bottom: 8px;
-        border-bottom: 2px solid #f1f4f9;
-    }
-
     &:hover {
         background-color: var(--default-hover-bg);
 
         p {
             color: var(--default-hover-color);
         }
-    }
-}
-
-// list sp items
-.list-sp-items {
-    width: 214px;
-}
-
-.sp-item {
-    width: 100%;
-    padding: 10px 12px;
-    font-size: 1.45rem;
-    border-radius: 8px;
-
-    &:hover {
-        color: var(--default-hover-color);
-        background-color: var(--default-hover-bg);
     }
 }

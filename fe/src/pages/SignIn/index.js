@@ -8,6 +8,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '~/context/AuthContext';
 import * as httpRequest from '~/utils/httpRequest';
+import config from '~/config';
 
 const cx = classNames.bind(styles);
 
@@ -143,7 +144,11 @@ function SignIn() {
 
                 dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
 
-                navigate('/');
+                if (res.data.role === 'admin') {
+                    navigate(config.routes.adminHome);
+                } else {
+                    navigate(config.routes.home);
+                }
                 window.location.reload(false);
             } catch (err) {
                 dispatch({ type: 'LOGIN_FAILURE', payload: err.response.data });
@@ -214,7 +219,7 @@ function SignIn() {
                     <div className="forgot-link">
                         <a href="#">Forgot password?</a>
                     </div>
-                    <button type="submit" className="submit-btn" onClick={handleLoginAccount}>
+                    <button type="submit" className="submit-btn" disabled={user} onClick={handleLoginAccount}>
                         Login
                     </button>
                     <p>or login with social platforms</p>
@@ -282,22 +287,22 @@ function SignIn() {
 
             {/* error msg */}
             {error && showError && (
-                <div className={cx('error-message user-select-none')}>
+                <div className={cx('error-message')}>
                     <p>{error.message}</p>
                 </div>
             )}
 
             {/* error text when db not work */}
-            {showError && (
-                <div className={cx('error-message user-select-none')}>
+            {errorText && showError && (
+                <div className={cx('error-message')}>
                     <p>{errorText}</p>
                 </div>
             )}
 
             {/* show alert when logged in */}
             {user && (
-                <div className={cx('error-message user-select-none')}>
-                    <h1 className="fs-2">Bạn đã đăng nhập</h1>
+                <div className={cx('error-message')}>
+                    <p>Bạn đã đăng nhập</p>
                 </div>
             )}
         </div>

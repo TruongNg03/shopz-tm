@@ -24,8 +24,9 @@ function Sidebar() {
 
     // logout
     const handleLogout = () => {
-        window.localStorage.clear();
-        navigate('/');
+        localStorage.removeItem('shopz-tm-user');
+        navigate(config.routes.home);
+        window.location.reload(false);
     };
 
     return (

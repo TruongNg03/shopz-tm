@@ -1,5 +1,5 @@
 import './Header.scss';
-import { forwardRef, useState } from 'react';
+import { forwardRef, useState, useContext } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -17,40 +17,47 @@ import NotifyTooltip from '~/components/Tooltip/NotifyTooltip';
 import MenuTooltip from '~/components/Tooltip/MenuTooltip/MenuTooltip';
 import NavLinkItem from '~/components/NavLinkItem';
 import config from '~/config';
+import { AuthContext } from '~/context/AuthContext';
 
 // menu
 const MENU_ITEMS = [
     {
         title: 'Đổi ngôn ngữ',
-        children: [
-            { type: 'language', data: 'Tiếng Anh', checked: false },
-            { type: 'language', data: 'Tiếng Việt', checked: true },
-            { type: 'language', data: 'Tiếng Nhật', checked: false },
-        ],
     },
     {
         title: 'Cài đặt hiển thị',
-        children: [
-            { type: 'display', data: 'Chế độ sáng', checked: true },
-            { type: 'display', data: 'chể độ tối', checked: false },
-        ],
         separate: true,
     },
     {
         title: 'Đăng nhập',
         to: config.routes.signIn,
     },
-    // {
-    //     title: 'Đăng xuất',
-    //     to: config.routes.login,
-    //     separate: true,
-    // },
+];
+
+const USER_MENU_ITEMS = [
+    {
+        title: 'Trang cá nhân',
+        to: config.routes.profile,
+    },
+    ...MENU_ITEMS.slice(0, 2),
+    {
+        title: 'Đăng xuất',
+        to: config.routes.home,
+        separate: true,
+        onClick: () => {
+            console.log('oke');
+            localStorage.removeItem('shopz-tm-user');
+            window.location.reload(false);
+        },
+    },
 ];
 
 const sizeExpandNavbar = 'md';
 /* 'sm', 'md', 'lg', 'xl', 'xxl' */
 
 function Header() {
+    const { user } = useContext(AuthContext);
+
     // example
     const [searchResult, setSearchResult] = useState([
         { linkImg: images.faruzanCat, contentItem: 'content', to: config.routes.testProduct },
@@ -150,8 +157,13 @@ function Header() {
                                     <Tippy
                                         placement="bottom-end"
                                         interactive
-                                        // visible
-                                        render={() => <MenuTooltip header="Thiết lập hệ thống" data={MENU_ITEMS} />}
+                                        visible
+                                        render={() => (
+                                            <MenuTooltip
+                                                header="Thiết lập hệ thống"
+                                                data={user ? USER_MENU_ITEMS : MENU_ITEMS}
+                                            />
+                                        )}
                                     >
                                         <CNUButton icon={faCircleUser} />
                                     </Tippy>

@@ -8,7 +8,7 @@ import MenuItem from './MenuItem';
 
 const cx = classNames.bind(styles);
 
-function MenuTooltip({ header, data = [{}], onClick }) {
+function MenuTooltip({ header, data = [{}] }) {
     return (
         <TooltipWrapper menuTooltip>
             <HeaderTooltip header={header} />
@@ -19,11 +19,11 @@ function MenuTooltip({ header, data = [{}], onClick }) {
                         <MenuItem
                             key={key++}
                             title={item.title}
-                            // icon={<FontAwesomeIcon icon={faBell} />}
-                            // children={item.children}
-                            separate={item.separate}
+                            icon={item.icon}
                             to={item.to}
-                            onClick={onClick}
+                            separate={item.separate}
+                            hidden={item.hidden}
+                            onClick={item.onClick}
                         />
                     );
                 })}

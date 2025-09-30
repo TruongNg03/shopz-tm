@@ -4,6 +4,7 @@
 }
 
 .product-img {
+    min-width: 250px;
     max-width: 300px;
 }
 
@@ -56,6 +57,7 @@
     }
 
     .product-img {
+        min-width: none;
         max-width: none;
     }
 

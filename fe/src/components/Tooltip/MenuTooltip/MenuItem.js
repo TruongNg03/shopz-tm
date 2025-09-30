@@ -1,12 +1,4 @@
-import classNames from 'classnames/bind';
-import styles from './MenuTooltip.scss';
 import { Link } from 'react-router-dom';
-import Tippy from '@tippyjs/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
-import { Wrapper } from '~/components/Tooltip';
-
-const cx = classNames.bind(styles);
 
 // const EXAMPLE_ITEM = {
 //     title: 'a', // ~item.title
@@ -16,37 +8,16 @@ const cx = classNames.bind(styles);
 //     separate: true, // ~item.separate
 // };
 
-function MenuItem({ title, icon, to, children = [], separate, onClick }) {
-    const classes = cx('menu-tooltip-item', { separate });
-
+function MenuItem({ title, icon, to, separate, hidden, onClick }) {
     return (
-        <div className="w-100">
-            <Tippy
-                placement="left-start"
-                interactive
-                // visible
-                render={() =>
-                    children.length > 0 && (
-                        <Wrapper sbItem>
-                            {children.map((child, key) => {
-                                return (
-                                    <span
-                                        className="sp-item d-flex flex-row align-items-center justify-content-between"
-                                        key={key++}
-                                    >
-                                        <p className="m-0">{child.data}</p>
-                                        {child.checked && <FontAwesomeIcon icon={faCheck} />}
-                                    </span>
-                                );
-                            })}
-                        </Wrapper>
-                    )
-                }
-            >
-                <div className={cx(classes, 'w-100 d-flex align-items-center')} onClick={onClick}>
+        !hidden && (
+            <div className="w-100">
+                {separate && <div className="separate"></div>}
+
+                <div className="menu-tooltip-item w-100 d-flex align-items-center" onClick={onClick}>
                     <span className="flex-grow-1 fw-bold">
                         <Link className="text-decoration-none text-black" to={to}>
-                            <p className="m-0">{title}</p>
+                            <p className="m-0 fs-4">{title}</p>
                         </Link>
                     </span>
                     {icon && (
@@ -55,8 +26,8 @@ function MenuItem({ title, icon, to, children = [], separate, onClick }) {
                         </span>
                     )}
                 </div>
-            </Tippy>
-        </div>
+            </div>
+        )
     );
 }
 
