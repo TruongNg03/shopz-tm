@@ -1,6 +1,20 @@
 const User = require('../models/User');
 
 class UserController {
+  // [GET] /users/:id
+  getOneUser(req, res, next) {
+    User.findOne({ _id: req.params.id })
+      .then((user) => {
+        if (user) {
+          console.log('Get user with id:', req.params.id);
+          res.status(200).json({ user });
+        } else {
+          res.status(200).json({ mgs: 'Không tìm thấy người dùng' });
+        }
+      })
+      .catch(next);
+  }
+
   // [GET] /users?id=...email=...&username=...&phone=...&banned=...
   getUsers(req, res, next) {
     const { id, email, username, phone, banned } = req.query;
@@ -29,7 +43,7 @@ class UserController {
   }
 
   // update user
-  // [PUT] /users/update?id=...
+  // [PATCH] /users/update?id=...
   updateUser(req, res, next) {
     User.updateOne({ _id: req.query.id }, req.body)
       .lean()

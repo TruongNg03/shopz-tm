@@ -56,7 +56,7 @@ class SignInController {
               console.log('-- ' + user.email + ' login');
 
               // generate token
-              const token = jwt.sign({ _id: user._id, user: user.email, role: user.role }, process.env.JWT_SECRET, {
+              const token = jwt.sign({ _id: user._id, email: user.email, role: user.role }, process.env.JWT_SECRET, {
                 expiresIn: '1d',
               });
 
@@ -66,7 +66,7 @@ class SignInController {
                   sameSite: 'strict',
                 })
                 .status(200)
-                .json({ email: user.email, role: user.role, token: token });
+                .json({ _id: user._id, email: user.email, role: user.role, token: token });
             })
             .catch(next);
         }
