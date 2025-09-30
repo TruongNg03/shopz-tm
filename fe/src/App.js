@@ -7,13 +7,16 @@ import { AuthContext } from '~/context/AuthContext';
 function App() {
     const { user } = useContext(AuthContext);
 
-    // user routes
-    const priRoutes = user ? privateRoutes : [];
-    // admin routes
-    const admRoutes = user ? (user.role === 'admin' ? adminRoutes : []) : [];
-
     // get all routes
-    const allRoutes = [...publicRoutes, ...priRoutes, ...admRoutes];
+    let allRoutes = publicRoutes;
+
+    if (user) {
+        if (user.role === 'admin') {
+            allRoutes = adminRoutes;
+        } else {
+            allRoutes = [...allRoutes, ...privateRoutes];
+        }
+    }
     // console.log(allRoutes);
 
     return (
