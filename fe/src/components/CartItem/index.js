@@ -3,17 +3,19 @@ import styles from './CartItem.scss';
 import { Card, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
+import config from '~/config';
 
 const cx = classNames.bind(styles);
 
 function CartItem({
-    linkImg,
-    title,
-    text,
     linkTo,
-    price,
-    status,
-    nameProduct,
+    linkImg,
+    // title,
+    // text,
+    // price,
+    // status,
+    // nameProduct,
+    data,
     contentProduct = [],
     showCart = false,
     showTitle = false,
@@ -33,7 +35,7 @@ function CartItem({
                 {showCart && (
                     <div className={cx('hover-info position-absolute top-0 w-100 h-100 bg-white opacity-0')}>
                         <div className="p-3">
-                            <p className="m-0 fs-3">{nameProduct}</p>
+                            <p className="m-0 fs-3">{data?.nameProduct}</p>
                         </div>
                     </div>
                 )}
@@ -42,15 +44,15 @@ function CartItem({
             <Card.Body>
                 {showTitle && (
                     <a href={linkTo}>
-                        <Card.Title className={cx('pt-3 text-center fs-2 fw-bold')}>{title}</Card.Title>
+                        <Card.Title className={cx('pt-3 text-center fs-2 fw-bold')}>{data?.title}</Card.Title>
                     </a>
                 )}
                 <a href={linkTo}>
-                    <Card.Text className={cx('name-product text-center fs-4')}>{text}</Card.Text>
+                    <Card.Text className={cx('name-product text-center fs-4')}>{data?.text}</Card.Text>
                 </a>
                 {showCart && (
                     <span className={cx('d-flex align-items-center justify-content-between user-select-none')}>
-                        <p className={cx('price-product m-0 fs-2 fw-bold')}>{price + '₫'}</p>
+                        <p className={cx('price-product m-0 fs-2 fw-bold')}>{data?.price + '₫'}</p>
                         <Button href="/cart" className={cx('add rounded-circle bg-transparent border-0 fs-2')}>
                             <FontAwesomeIcon icon={faCartPlus} />
                         </Button>
@@ -61,14 +63,14 @@ function CartItem({
             {showItemSpecification && (
                 <div className="item-specification p-3">
                     <div className="content-specification">
-                        <p className="fs-2 fw-bold text-uppercase mb-2">{price + '₫'}</p>
-                        <p className="fs-5 fw-bold text-uppercase">{status}</p>
+                        <p className="fs-2 fw-bold text-uppercase mb-2">{data?.price + '₫'}</p>
+                        <p className="fs-5 fw-bold text-uppercase">{data?.status}</p>
                         <ul className="pt-3 fs-4">{infoProduct}</ul>
                     </div>
 
                     <div className="group-btn d-flex flex-column mt-5 pb-2 row-gap-3">
                         <Button
-                            href="/product/test-product"
+                            href={config.routes.testProduct}
                             className="view-specification-btn p-2 fs-4 fw-bold rounded-5"
                         >
                             Xem chi tiết

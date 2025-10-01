@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import CartItem from '~/components/CartItem';
+import * as httpRequest from '~/utils/httpRequest';
 // import images from '~/assets/images';
 
 //example data
@@ -25,7 +27,26 @@ import CartItem from '~/components/CartItem';
 //     },
 // ];
 
-function Body({ title, dataProducts = [{}] }) {
+function Body({ title, type }) {
+    const [productsData, setProductsData] = useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
+
+    useEffect(() => {
+        async function getData() {
+            const data = await httpRequest.get(`products?type=${type}`);
+            console.log(data);
+
+            if (data.message) {
+                setErrorMessage(data.message);
+            } else {
+                setProductsData(data.products);
+                setErrorMessage('');
+            }
+        }
+
+        getData();
+    }, []);
+
     return (
         <div className="body container">
             <div className="d-flex flex-column pt-5 mx-5">
@@ -37,27 +58,33 @@ function Body({ title, dataProducts = [{}] }) {
                 </div>
 
                 <div className="list-products w-100">
-                    <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-gap-4">
-                        {dataProducts.map((data, key = 0) => {
-                            return (
-                                <div key={key++} className="col d-flex justify-content-center">
-                                    <CartItem
-                                        linkImg={data.linkImg}
-                                        title={data.title}
-                                        text={data.nameProduct}
-                                        linkTo={data.linkTo}
-                                        price={data.price}
-                                        status={data.status}
-                                        nameProduct={data.nameProduct}
-                                        contentProduct={data.contentProduct}
-                                        addProduct
-                                        // showCart
-                                        showItemSpecification
-                                    />
-                                </div>
-                            );
-                        })}
-                    </div>
+                    {errorMessage ? (
+                        <p>{errorMessage}</p>
+                    ) : productsData.length > 0 ? (
+                        <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-gap-4">
+                            {productsData.map((data) => {
+                                return (
+                                    <div key={data._id} className="col d-flex justify-content-center">
+                                        <CartItem
+                                            linkImg={
+                                                'http://localhost:3333/static/media/intro-3.ea4846817a3375824fd3.png'
+                                            }
+                                            title={data.title}
+                                            text={data.nameProduct}
+                                            linkTo={`products/${data._id}`}
+                                            data={data}
+                                            contentProduct={data.contentProduct}
+                                            addProduct
+                                            // showCart
+                                            showItemSpecification
+                                        />
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <p>Không có sản phẩm</p>
+                    )}
                 </div>
             </div>
         </div>

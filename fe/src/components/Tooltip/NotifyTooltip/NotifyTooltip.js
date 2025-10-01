@@ -11,7 +11,6 @@ const cx = classNames.bind(styles);
 
 function NotifyTooltip({ header, content, linkTo, nameBtn }) {
     const { user } = useContext(AuthContext);
-    console.log(user);
 
     return (
         <TooltipWrapper notifyTooltip>

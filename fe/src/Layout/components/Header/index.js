@@ -1,5 +1,5 @@
 import './Header.scss';
-import { forwardRef, useState, useContext } from 'react';
+import { forwardRef, useState, useContext, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,7 +10,6 @@ import Nav from 'react-bootstrap/Nav';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 
 import Tippy from '@tippyjs/react/headless';
-import images from '~/assets/images';
 import { Wrapper as TooltipWrapper } from '~/components/Tooltip';
 import SearchItem from '~/components/SearchItem';
 import NotifyTooltip from '~/components/Tooltip/NotifyTooltip';
@@ -18,6 +17,8 @@ import MenuTooltip from '~/components/Tooltip/MenuTooltip/MenuTooltip';
 import NavLinkItem from '~/components/NavLinkItem';
 import config from '~/config';
 import { AuthContext } from '~/context/AuthContext';
+import * as httpRequest from '~/utils/httpRequest';
+import useDebounce from '~/hooks/useDebounce';
 
 // menu
 const MENU_ITEMS = [
@@ -58,16 +59,46 @@ const sizeExpandNavbar = 'md';
 function Header() {
     const { user } = useContext(AuthContext);
 
-    // example
-    const [searchResult, setSearchResult] = useState([
-        { linkImg: images.faruzanCat, contentItem: 'content', to: config.routes.testProduct },
-        { linkImg: images.faruzanCat, contentItem: 'content', to: config.routes.testProduct },
-        { linkImg: images.faruzanCat, contentItem: 'content', to: config.routes.testProduct },
-        { linkImg: images.faruzanCat, contentItem: 'content', to: config.routes.testProduct },
-        { linkImg: images.faruzanCat, contentItem: 'content', to: config.routes.testProduct },
-        { linkImg: images.faruzanCat, contentItem: 'content', to: config.routes.testProduct },
-        { linkImg: images.faruzanCat, contentItem: 'content', to: config.routes.testProduct },
-    ]);
+    const [searchResult, setSearchResult] = useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [searchInput, setSearchInput] = useState('');
+    const [showSearchResult, setShowSearchResult] = useState(false);
+
+    const debouncedValue = useDebounce(searchInput, 500);
+
+    useEffect(() => {
+        if (!debouncedValue.trim()) {
+            setSearchResult([]);
+            return;
+        }
+
+        async function getData() {
+            const data = await httpRequest.get(`products?search_input=${searchInput}`);
+            console.log('search text:', searchInput);
+            console.log('search results:', data);
+
+            if (data.message) {
+                setSearchResult([]);
+                setErrorMessage(data.message);
+            } else {
+                setSearchResult(data.products);
+                setErrorMessage('');
+            }
+        }
+
+        getData();
+    }, [debouncedValue]);
+
+    const handleSearchChange = (e) => {
+        const searchValue = e.target.value;
+        if (!searchValue.startsWith(' ')) {
+            setSearchInput(searchValue);
+        }
+    };
+
+    const handleHideResult = () => {
+        setShowSearchResult(false);
+    };
 
     // cart, notify, user button
     const CNUButton = forwardRef((props, ref) => {
@@ -111,7 +142,7 @@ function Header() {
                                     <Tippy
                                         placement="bottom"
                                         interactive
-                                        // visible={searchResult.length > 0}
+                                        visible={showSearchResult && searchResult.length > 0}
                                         render={(attr) => (
                                             <div className="search-result" tabIndex={-1} {...attr}>
                                                 <TooltipWrapper searchTooltip>
@@ -121,12 +152,15 @@ function Header() {
                                                 </TooltipWrapper>
                                             </div>
                                         )}
+                                        onClickOutside={handleHideResult}
                                     >
                                         <Form.Control
                                             className="search-label"
                                             type="search"
                                             placeholder="Tìm kiếm..."
                                             aria-label="Search"
+                                            onChange={handleSearchChange}
+                                            onFocus={() => setShowSearchResult(true)}
                                         />
                                     </Tippy>
                                 </div>

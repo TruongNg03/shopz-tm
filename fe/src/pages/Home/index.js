@@ -97,13 +97,7 @@ function Home() {
                     {introData.map((data, key) => {
                         return (
                             <div key={key++} className="col d-flex justify-content-center">
-                                <CartItem
-                                    linkImg={data.linkImg}
-                                    title={data.title}
-                                    text={data.text}
-                                    linkTo={data.linkTo}
-                                    showTitle
-                                />
+                                <CartItem linkImg={data.linkImg} linkTo={data.linkTo} data={data} showTitle />
                             </div>
                         );
                     })}
@@ -123,11 +117,8 @@ function Home() {
                                 <div key={key++} className="col d-flex justify-content-center">
                                     <CartItem
                                         linkImg={data.linkImg}
-                                        title={data.title}
-                                        text={data.text}
                                         linkTo={data.linkTo}
-                                        price={data.price}
-                                        nameProduct={data.nameProduct}
+                                        data={data}
                                         contentProduct={data.contentProduct}
                                         addProduct
                                         showCart
@@ -153,11 +144,8 @@ function Home() {
                                     <CartItem
                                         key={key++}
                                         linkImg={data.linkImg}
-                                        title={data.title}
-                                        text={data.text}
                                         linkTo={data.linkTo}
-                                        price={data.price}
-                                        nameProduct={data.nameProduct}
+                                        data={data}
                                         contentProduct={data.contentProduct}
                                         addProduct
                                         showCart
