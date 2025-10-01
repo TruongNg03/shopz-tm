@@ -10,7 +10,7 @@ class BrandController {
         if (brands.length > 0) {
           res.status(200).json(brands);
         } else {
-          res.status(200).json({ msg: 'Không tìm thấy tên các hãng sản phẩm' });
+          res.status(404).json({ message: 'Không tìm thấy tên các hãng sản phẩm' });
         }
       })
       .catch(next);
@@ -24,13 +24,13 @@ class BrandController {
     Brand.findOne({ name: createBrand.name })
       .then((findBrand) => {
         if (findBrand) {
-          res.status(400).json({ msg: 'Tên hãng này đã tồn tại, hãy đổi sang tên hãng khác' });
+          res.status(409).json({ message: 'Tên hãng này đã tồn tại, hãy đổi sang tên hãng khác' });
         } else {
           createBrand
             .save()
             .then(() => {
               console.log('--Created a brand');
-              res.status(200).json({ msg: 'Đã thêm hãng sản phẩm' });
+              res.status(200).json({ message: 'Đã thêm hãng sản phẩm' });
             })
             .catch(next);
         }
@@ -44,7 +44,7 @@ class BrandController {
     Brand.deleteOne({ name: req.query.name })
       .then(() => {
         console.log(`--Deleted permanent brand with name: ${req.query.name}`);
-        res.status(200).json({ msg: 'Đã xóa sản phẩm này' });
+        res.status(200).json({ message: 'Đã xóa sản phẩm này' });
       })
       .catch(next);
   }

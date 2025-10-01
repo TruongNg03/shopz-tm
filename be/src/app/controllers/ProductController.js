@@ -3,14 +3,23 @@ const Product = require('../models/Product');
 class ProductController {
   // [GET] /products?id=...type='...'&brand='...'&name_product=...
   getProducts(req, res, next) {
-    const { id, type, brand, name_product } = req.query;
+    const { id, type, brand, name_product, search_input } = req.query;
 
-    const filter = {
+    let filter = {
       ...(id && { _id: id }),
       ...(type && { typeProduct: { $regex: type, $options: 'i' } }),
       ...(brand && { brand: { $regex: brand, $options: 'i' } }),
       ...(name_product && { nameProduct: { $regex: name_product, $options: 'i' } }),
     };
+
+    if (search_input) {
+      filter = {
+        $or: [
+          { nameProduct: { $regex: search_input, $options: 'i' } },
+          { brand: { $regex: search_input, $options: 'i' } },
+        ],
+      };
+    }
 
     // log query
     console.log('--Find product query:', filter);
@@ -19,9 +28,11 @@ class ProductController {
       .lean()
       .then((products) => {
         if (products.length > 0) {
+          console.log(filter);
+
           res.status(200).json({ products });
         } else {
-          res.status(200).json({ mgs: 'Không tìm thấy sản phẩm' });
+          res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
         }
       })
       .catch(next);
@@ -35,13 +46,13 @@ class ProductController {
     Product.findOne({ partNumber: createProduct.partNumber })
       .then((findProduct) => {
         if (findProduct) {
-          res.status(400).json({ msg: 'Mã hàng đã tồn tại' });
+          res.status(409).json({ message: 'Mã hàng đã tồn tại' });
         } else {
           createProduct
             .save()
             .then(() => {
               console.log('--Created a product');
-              res.status(200).json({ msg: 'Đã thêm sản phẩm' });
+              res.status(201).json({ message: 'Đã thêm sản phẩm' });
             })
             .catch(next);
         }
@@ -55,13 +66,17 @@ class ProductController {
     Product.findOne({ partNumber: req.body.partNumber })
       .then((findProduct) => {
         if (findProduct) {
-          res.status(400).json({ msg: 'Mã hàng đã tồn tại, hãy đổi sang mã hàng khác' });
+          res.status(409).json({ message: 'Mã hàng đã tồn tại, hãy đổi sang mã hàng khác' });
         } else {
           Product.updateOne({ _id: req.query.id }, req.body)
             .lean()
-            .then(() => {
+            .then((result) => {
+              if (result.matchedCount === 0) {
+                return res.status(404).json({ message: 'Không tìm thấy sản phẩm để chỉnh sửa' });
+              }
+
               console.log(`--Edited product with id: ${req.query.id}`);
-              res.status(200).json({ msg: 'Đã chỉnh sửa sản phẩm' });
+              res.status(200).json({ message: 'Đã chỉnh sửa sản phẩm' });
             })
             .catch(next);
         }
@@ -76,7 +91,7 @@ class ProductController {
     Product.delete({ _id: req.query.id })
       .then(() => {
         console.log(`--Deleted temporary product with id: ${req.query.id}`);
-        res.status(200).json({ msg: 'Đã xóa tạm thời sản phẩm' });
+        res.status(200).json({ message: 'Đã xóa tạm thời sản phẩm' });
       })
       .catch(next);
   }
@@ -87,7 +102,7 @@ class ProductController {
     Product.deleteOne({ _id: req.query.id })
       .then(() => {
         console.log(`--Deleted permanent product with id: ${req.query.id}`);
-        res.status(200).json({ msg: 'Đã xóa sản phẩm' });
+        res.status(200).json({ message: 'Đã xóa sản phẩm' });
       })
       .catch(next);
   }

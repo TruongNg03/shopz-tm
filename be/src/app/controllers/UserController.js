@@ -9,7 +9,7 @@ class UserController {
           console.log('Get user with id:', req.params.id);
           res.status(200).json({ user });
         } else {
-          res.status(200).json({ mgs: 'Không tìm thấy người dùng' });
+          res.status(404).json({ mgs: 'Không tìm thấy người dùng' });
         }
       })
       .catch(next);
@@ -36,7 +36,7 @@ class UserController {
         if (users.length > 0) {
           res.status(200).json({ users });
         } else {
-          res.status(200).json({ mgs: 'Không tìm thấy người dùng' });
+          res.status(404).json({ mgs: 'Không tìm thấy người dùng' });
         }
       })
       .catch(next);
@@ -49,7 +49,7 @@ class UserController {
       .lean()
       .then(() => {
         console.log(`--Updated user with id: ${req.query.id}`);
-        res.status(200).json({ msg: 'Đã cập nhật thông tin người dùng' });
+        res.status(200).json({ message: 'Đã cập nhật thông tin người dùng' });
       })
       .catch(next);
   }
@@ -61,7 +61,7 @@ class UserController {
     User.delete({ _id: req.query.id })
       .then(() => {
         console.log(`--Deleted temporary User with id: ${req.query.id}`);
-        res.status(200).json({ msg: 'Đã khóa người dùng' });
+        res.status(200).json({ message: 'Đã khóa người dùng' });
       })
       .catch(next);
   }
@@ -72,7 +72,7 @@ class UserController {
     User.deleteOne({ _id: req.query.id })
       .then(() => {
         console.log(`--Deleted permanent User with id: ${req.query.id}`);
-        res.status(200).json({ msg: 'Đã xóa người dùng' });
+        res.status(200).json({ message: 'Đã xóa người dùng' });
       })
       .catch(next);
   }
@@ -83,7 +83,7 @@ class UserController {
     User.restore({ _id: req.query.id })
       .then(() => {
         console.log(`--Restored User with id: ${req.query.id}`);
-        res.status(200).json({ msg: 'Đã mở khóa người dùng' });
+        res.status(200).json({ message: 'Đã mở khóa người dùng' });
       })
       .catch(next);
   }

@@ -19,7 +19,7 @@ class FeedbackController {
         if (feedbacks.length > 0) {
           res.status(200).json({ feedbacks });
         } else {
-          res.status(200).json({ mgs: 'Không tìm thấy phản hồi nào' });
+          res.status(404).json({ mgs: 'Không tìm thấy phản hồi nào' });
         }
       })
       .catch(next);

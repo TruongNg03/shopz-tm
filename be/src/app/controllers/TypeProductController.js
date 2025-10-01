@@ -10,7 +10,7 @@ class TypeProductController {
         if (typeProducts.length > 0) {
           res.status(200).json(typeProducts);
         } else {
-          res.status(200).json({ msg: 'Không tìm thấy tên các loại sản phẩm' });
+          res.status(404).json({ message: 'Không tìm thấy tên các loại sản phẩm' });
         }
       })
       .catch(next);
@@ -24,13 +24,13 @@ class TypeProductController {
     TypeProduct.findOne({ name: createTypeProduct.name })
       .then((findTypeProduct) => {
         if (findTypeProduct) {
-          res.status(400).json({ msg: 'Lại sản phẩm này đã tồn tại, hãy đổi sang loại khác' });
+          res.status(409).json({ message: 'Lại sản phẩm này đã tồn tại, hãy đổi sang loại khác' });
         } else {
           createTypeProduct
             .save()
             .then(() => {
               console.log('--Created a type product');
-              res.status(200).json({ msg: 'Đã thêm loại sản phẩm' });
+              res.status(200).json({ message: 'Đã thêm loại sản phẩm' });
             })
             .catch(next);
         }
@@ -44,7 +44,7 @@ class TypeProductController {
     TypeProduct.deleteOne({ name: req.query.name })
       .then(() => {
         console.log(`--Deleted permanent type product with name: ${req.query.name}`);
-        res.status(200).json({ msg: 'Đã xóa loại phẩm này' });
+        res.status(200).json({ message: 'Đã xóa loại phẩm này' });
       })
       .catch(next);
   }
