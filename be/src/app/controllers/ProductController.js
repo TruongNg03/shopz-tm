@@ -1,13 +1,13 @@
 const Product = require('../models/Product');
 
 class ProductController {
-  // [GET] /products?id=...type='...'&brand='...'&name_product=...
+  // [GET] /products?id=...category='...'&brand='...'&name_product=...
   getProducts(req, res, next) {
-    const { id, type, brand, name_product, search_input } = req.query;
+    const { id, category, brand, name_product, search_input } = req.query;
 
     let filter = {
       ...(id && { _id: id }),
-      ...(type && { typeProduct: { $regex: type, $options: 'i' } }),
+      ...(category && { category: { $regex: category, $options: 'i' } }),
       ...(brand && { brand: { $regex: brand, $options: 'i' } }),
       ...(name_product && { nameProduct: { $regex: name_product, $options: 'i' } }),
     };
@@ -29,9 +29,7 @@ class ProductController {
       .lean()
       .then((products) => {
         if (products.length > 0) {
-          console.log(filter);
-
-          res.status(200).json({ products });
+          res.status(200).json({ products, total: products.length });
         } else {
           res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
         }

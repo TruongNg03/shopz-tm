@@ -27,13 +27,13 @@ import * as httpRequest from '~/utils/httpRequest';
 //     },
 // ];
 
-function Body({ title, type }) {
+function Body({ title, category }) {
     const [productsData, setProductsData] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         async function getData() {
-            const data = await httpRequest.get(`products?type=${type}`);
+            const data = await httpRequest.get(`products?category=${category}`);
             console.log(data);
 
             if (data.message) {
@@ -45,7 +45,7 @@ function Body({ title, type }) {
         }
 
         getData();
-    }, []);
+    }, [category]);
 
     return (
         <div className="body container">
@@ -62,18 +62,16 @@ function Body({ title, type }) {
                         <p>{errorMessage}</p>
                     ) : productsData.length > 0 ? (
                         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-gap-4">
-                            {productsData.map((data) => {
+                            {productsData.map((product) => {
                                 return (
-                                    <div key={data._id} className="col d-flex justify-content-center">
+                                    <div key={product._id} className="col d-flex justify-content-center">
                                         <CartItem
                                             linkImg={
                                                 'http://localhost:3333/static/media/intro-3.ea4846817a3375824fd3.png'
                                             }
-                                            title={data.title}
-                                            text={data.nameProduct}
-                                            linkTo={`products/${data._id}`}
-                                            data={data}
-                                            contentProduct={data.contentProduct}
+                                            linkTo={`/products/${product._id}`}
+                                            title={product.nameProduct}
+                                            product={product}
                                             addProduct
                                             // showCart
                                             showItemSpecification

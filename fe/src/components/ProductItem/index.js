@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import { NavLink } from 'react-router-dom';
 
 // example
 // const productItem = {
@@ -39,12 +40,17 @@ function ProductItem({ product = {}, showOverView = true, separate = false, admi
     return (
         <div>
             <div className="product-item py-5 px-3">
-                <div className="product-img my-5">
+                <NavLink to={`/products/${product._id}`} className="product-img my-5">
                     <img className="w-100 object-fit-contain" src={product.linkImg} alt={product.nameProduct} />
-                </div>
+                </NavLink>
 
                 <div className="overview d-flex flex-column px-5">
-                    <h1 className="name-product mb-4 fw-bold">{product.nameProduct}</h1>
+                    <NavLink
+                        className="name-product mb-4 fs-1 fw-bold text-black text-decoration-none"
+                        to={`/products/${product._id}`}
+                    >
+                        {product.nameProduct}
+                    </NavLink>
                     <div className="separate-content w-100"></div>
                     <div className="product-info my-4">
                         {product.overview && showOverView && (
@@ -57,7 +63,7 @@ function ProductItem({ product = {}, showOverView = true, separate = false, admi
                             </p>
                         )}
                         <ul className="fs-4 py-3">
-                            {product.contentProduct.map((info, key) => (
+                            {product.shortDescription.map((info, key) => (
                                 <li key={key++}>{info}</li>
                             ))}
                         </ul>

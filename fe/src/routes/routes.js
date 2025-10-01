@@ -32,7 +32,7 @@ const publicRoutes = [
     { path: config.routes.monitor, component: Monitor },
     { path: config.routes.accessories, component: Accessories },
     { path: config.routes.allProducts, component: AllProducts },
-    { path: config.routes.testProduct, component: SpecificationProduct },
+    { path: config.routes.specificationProduct, component: SpecificationProduct },
     { path: config.routes.feedback, component: Feedback },
     { path: config.routes.signIn, component: SignIn, layout: HeaderOnly },
     // not found route

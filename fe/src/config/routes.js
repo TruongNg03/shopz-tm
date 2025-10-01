@@ -10,7 +10,7 @@ const routes = {
     feedback: '/feedback',
     signIn: '/sign-in',
     //
-    testProduct: '/products/test-product',
+    specificationProduct: '/products/:id',
     // admin routes
     adminHome: '/admin/home',
     adminProducts: '/admin/products',

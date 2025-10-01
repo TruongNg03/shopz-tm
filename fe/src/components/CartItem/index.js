@@ -3,28 +3,22 @@ import styles from './CartItem.scss';
 import { Card, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
-import config from '~/config';
+import { NavLink } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
 function CartItem({
     linkTo,
     linkImg,
-    // title,
-    // text,
-    // price,
-    // status,
-    // nameProduct,
-    data,
-    contentProduct = [],
+    title,
+    text,
+    product = {},
     showCart = false,
-    showTitle = false,
+    showText = false,
     addProduct,
     showItemSpecification,
 }) {
     const classes = cx('card', { addProduct, showItemSpecification });
-
-    const infoProduct = contentProduct.map((info, key) => <li key={key++}>{info}</li>);
 
     return (
         <Card className={cx(classes, 'border-0 rounded-4 d-flex flex-column m-2')}>
@@ -35,24 +29,33 @@ function CartItem({
                 {showCart && (
                     <div className={cx('hover-info position-absolute top-0 w-100 h-100 bg-white opacity-0')}>
                         <div className="p-3">
-                            <p className="m-0 fs-3">{data?.nameProduct}</p>
+                            <p className="m-0 fs-3">{product.nameProduct}</p>
+                            {product.shortDescription ? (
+                                <ul className="pt-3 fs-4">
+                                    {product.shortDescription.map((info, key) => (
+                                        <li key={key++}>{info}</li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <></>
+                            )}
                         </div>
                     </div>
                 )}
             </div>
 
             <Card.Body>
-                {showTitle && (
-                    <a href={linkTo}>
-                        <Card.Title className={cx('pt-3 text-center fs-2 fw-bold')}>{data?.title}</Card.Title>
-                    </a>
+                <NavLink to={linkTo}>
+                    <Card.Title className={cx('pt-3 text-center fs-2 fw-bold')}>{title}</Card.Title>
+                </NavLink>
+                {showText && (
+                    <NavLink to={linkTo}>
+                        <Card.Text className={cx('name-product text-center fs-4')}>{text}</Card.Text>
+                    </NavLink>
                 )}
-                <a href={linkTo}>
-                    <Card.Text className={cx('name-product text-center fs-4')}>{data?.text}</Card.Text>
-                </a>
                 {showCart && (
                     <span className={cx('d-flex align-items-center justify-content-between user-select-none')}>
-                        <p className={cx('price-product m-0 fs-2 fw-bold')}>{data?.price + '₫'}</p>
+                        <p className={cx('price-product m-0 fs-2 fw-bold')}>{product.price + '₫'}</p>
                         <Button href="/cart" className={cx('add rounded-circle bg-transparent border-0 fs-2')}>
                             <FontAwesomeIcon icon={faCartPlus} />
                         </Button>
@@ -63,18 +66,22 @@ function CartItem({
             {showItemSpecification && (
                 <div className="item-specification p-3">
                     <div className="content-specification">
-                        <p className="fs-2 fw-bold text-uppercase mb-2">{data?.price + '₫'}</p>
-                        <p className="fs-5 fw-bold text-uppercase">{data?.status}</p>
-                        <ul className="pt-3 fs-4">{infoProduct}</ul>
+                        <p className="fs-2 fw-bold text-uppercase mb-2">{product.price + '₫'}</p>
+                        <p className="fs-5 fw-bold text-uppercase">{product.status}</p>
+                        <ul className="pt-3 fs-4">
+                            {product.shortDescription.map((info, key) => (
+                                <li key={key++}>{info}</li>
+                            ))}
+                        </ul>
                     </div>
 
                     <div className="group-btn d-flex flex-column mt-5 pb-2 row-gap-3">
-                        <Button
-                            href={config.routes.testProduct}
-                            className="view-specification-btn p-2 fs-4 fw-bold rounded-5"
+                        <NavLink
+                            className="view-specification-btn p-2 fs-4 fw-bold text-center rounded-5"
+                            to={`/products/${product._id}`}
                         >
                             Xem chi tiết
-                        </Button>
+                        </NavLink>
                         <Button className="add-to-cart-btn p-2 fs-4 fw-bold rounded-5">Thêm vào giỏ hàng</Button>
                     </div>
                 </div>

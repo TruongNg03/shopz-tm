@@ -32,7 +32,7 @@ function Home() {
             linkTo: '/#',
             price: '10',
             nameProduct: 'AN-515',
-            contentProduct: ['line 1', 'line 2'],
+            shortDescription: ['line 1', 'line 2'],
         },
         {
             linkImg: images.introduction2,
@@ -41,7 +41,7 @@ function Home() {
             linkTo: '/#',
             price: '10',
             nameProduct: 'AN-515',
-            contentProduct: ['line 1', 'line 2'],
+            shortDescription: ['line 1', 'line 2'],
         },
         {
             linkImg: images.introduction3,
@@ -50,7 +50,7 @@ function Home() {
             linkTo: '/#',
             price: '10',
             nameProduct: 'AN-515',
-            contentProduct: ['line 1', 'line 2'],
+            shortDescription: ['line 1', 'line 2'],
         },
         {
             linkImg: images.introduction4,
@@ -59,7 +59,7 @@ function Home() {
             linkTo: '/#',
             price: '10',
             nameProduct: 'AN-515',
-            contentProduct: ['line 1', 'line 2'],
+            shortDescription: ['line 1', 'line 2'],
         },
     ];
 
@@ -97,7 +97,13 @@ function Home() {
                     {introData.map((data, key) => {
                         return (
                             <div key={key++} className="col d-flex justify-content-center">
-                                <CartItem linkImg={data.linkImg} linkTo={data.linkTo} data={data} showTitle />
+                                <CartItem
+                                    linkImg={data.linkImg}
+                                    linkTo={data.linkTo}
+                                    title={data.title}
+                                    text={data.text}
+                                    showText
+                                />
                             </div>
                         );
                     })}
@@ -112,14 +118,14 @@ function Home() {
                     </div>
 
                     <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-gap-3 py-5">
-                        {featuredProducts.map((data, key) => {
+                        {featuredProducts.map((product, key) => {
                             return (
                                 <div key={key++} className="col d-flex justify-content-center">
                                     <CartItem
-                                        linkImg={data.linkImg}
-                                        linkTo={data.linkTo}
-                                        data={data}
-                                        contentProduct={data.contentProduct}
+                                        linkImg={product.linkImg}
+                                        linkTo={product.linkTo}
+                                        title={product.title}
+                                        product={product}
                                         addProduct
                                         showCart
                                     />
@@ -139,14 +145,14 @@ function Home() {
 
                     <div className="list-featured-products py-5">
                         <Slider {...settings}>
-                            {featuredProducts.map((data, key) => {
+                            {featuredProducts.map((product, key) => {
                                 return (
                                     <CartItem
                                         key={key++}
-                                        linkImg={data.linkImg}
-                                        linkTo={data.linkTo}
-                                        data={data}
-                                        contentProduct={data.contentProduct}
+                                        linkImg={product.linkImg}
+                                        linkTo={product.linkTo}
+                                        title={product.title}
+                                        product={product}
                                         addProduct
                                         showCart
                                     />

@@ -17,7 +17,7 @@ class CategoryController {
   }
 
   // create category
-  // [PUT] /categories/create
+  // [POST] /categories/create
   createCategory(req, res, next) {
     const createCategory = new Category(req.body);
 

@@ -8,6 +8,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Offcanvas from 'react-bootstrap/Offcanvas';
+import { useNavigate } from 'react-router-dom';
 
 import Tippy from '@tippyjs/react/headless';
 import { Wrapper as TooltipWrapper } from '~/components/Tooltip';
@@ -58,6 +59,7 @@ const sizeExpandNavbar = 'md';
 
 function Header() {
     const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const [searchResult, setSearchResult] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
@@ -96,6 +98,12 @@ function Header() {
         }
     };
 
+    const handleSearchBtn = () => {
+        if (searchInput.trim() !== '') {
+            navigate(`/all-products?q=${encodeURIComponent(searchInput)}`);
+        }
+    };
+
     const handleHideResult = () => {
         setShowSearchResult(false);
     };
@@ -130,11 +138,9 @@ function Header() {
                             </Offcanvas.Title>
                         </Offcanvas.Header>
                         <Offcanvas.Body className="align-items-center justify-content-end flex-grow-1">
-                            <div className="d-flex flex-row justify-content-start align-items-center flex-grow-1 column-gap-1 me-4 text-center">
+                            <div className="d-flex flex-row justify-content-start align-items-center flex-grow-1 column-gap-2 me-4 text-center">
                                 <NavLinkItem className="header-nav-link" title="Trang chủ" to="/" />
                                 <NavLinkItem className="header-nav-link" title="Feedback" to="/feedback" />
-                                <NavLinkItem className="header-nav-link" title="Action3" to="/action3" />
-                                <NavLinkItem className="header-nav-link" title="Action4" to="/action4" />
                             </div>
 
                             <Form className="search position-relative mx-4">
@@ -164,7 +170,7 @@ function Header() {
                                         />
                                     </Tippy>
                                 </div>
-                                <Button className="search-btn" variant="outline-secondary">
+                                <Button className="search-btn" variant="outline-secondary" onClick={handleSearchBtn}>
                                     <FontAwesomeIcon icon={faMagnifyingGlass} />
                                 </Button>
                             </Form>
