@@ -14,6 +14,7 @@ class ProductController {
 
     if (search_input) {
       filter = {
+        ...filter,
         $or: [
           { nameProduct: { $regex: search_input, $options: 'i' } },
           { brand: { $regex: search_input, $options: 'i' } },

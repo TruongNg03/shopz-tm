@@ -17,8 +17,8 @@ const Product = new Schema(
     status: { type: String, default: 'Có hàng' },
     shortOverview: { type: String, default: 'Default short overview' },
     overview: { type: String, default: 'Default overview' },
-    shortDescription: { type: String, default: 'Default short description' },
-    description: { type: String, default: 'Default description' },
+    shortDescription: { type: Array, default: ['Default short description'] },
+    description: { type: Array, default: ['Default description'] },
   },
   {
     timestamps: true,

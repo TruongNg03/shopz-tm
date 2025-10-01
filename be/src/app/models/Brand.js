@@ -6,6 +6,7 @@ const Schema = mongoose.Schema;
 const Brand = new Schema(
   {
     name: { type: String, require: true, default: 'Default Brand', unique: true },
+    key: { type: String, require: true, default: 'brand' },
   },
   {
     timestamps: true,

@@ -1,14 +1,14 @@
-const TypeProduct = require('../models/TypeProduct');
+const TypeProduct = require('../models/Category');
 
-class TypeProductController {
-  // get all typeProducts
-  // [GET] /typeProducts
-  getTypeProducts(req, res, next) {
+class CategoryController {
+  // get all categories
+  // [GET] /categories
+  getCategories(req, res, next) {
     TypeProduct.find({})
       .lean()
-      .then((typeProducts) => {
-        if (typeProducts.length > 0) {
-          res.status(200).json(typeProducts);
+      .then((categories) => {
+        if (categories.length > 0) {
+          res.status(200).json(categories);
         } else {
           res.status(404).json({ message: 'Không tìm thấy tên các loại sản phẩm' });
         }
@@ -16,17 +16,17 @@ class TypeProductController {
       .catch(next);
   }
 
-  // create typeProduct
-  // [PUT] /typeProducts/create
-  createTypeProduct(req, res, next) {
-    const createTypeProduct = new TypeProduct(req.body);
+  // create category
+  // [PUT] /categories/create
+  createCategory(req, res, next) {
+    const createCategory = new Category(req.body);
 
-    TypeProduct.findOne({ name: createTypeProduct.name })
-      .then((findTypeProduct) => {
-        if (findTypeProduct) {
+    Category.findOne({ name: createCategory.name })
+      .then((findCategory) => {
+        if (findCategory) {
           res.status(409).json({ message: 'Lại sản phẩm này đã tồn tại, hãy đổi sang loại khác' });
         } else {
-          createTypeProduct
+          createCategory
             .save()
             .then(() => {
               console.log('--Created a type product');
@@ -38,10 +38,10 @@ class TypeProductController {
       .catch(next);
   }
 
-  // delete permanent TypeProduct
-  // [DELETE] /TypeProducts/delete-permanent?name
-  deletePermanentTypeProduct(req, res, next) {
-    TypeProduct.deleteOne({ name: req.query.name })
+  // delete permanent Category
+  // [DELETE] /Category/delete-permanent?name
+  deletePermanentCategory(req, res, next) {
+    Category.deleteOne({ name: req.query.name })
       .then(() => {
         console.log(`--Deleted permanent type product with name: ${req.query.name}`);
         res.status(200).json({ message: 'Đã xóa loại phẩm này' });
@@ -50,4 +50,4 @@ class TypeProductController {
   }
 }
 
-module.exports = new TypeProductController();
+module.exports = new CategoryController();
