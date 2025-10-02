@@ -7,8 +7,9 @@ const User = new Schema(
   {
     email: { type: String, require: true, unique: true },
     password: { type: String, require: true },
-    username: { type: String, default: null },
-    phone: { type: String, default: null },
+    username: { type: String, default: '' },
+    phone: { type: String, default: '' },
+    numberOrder: { type: Number, default: 0 },
     banned: { type: Boolean, default: false },
     // type ['user', 'admin']
     role: { type: String, default: 'user' },
