@@ -47,7 +47,6 @@ const USER_MENU_ITEMS = [
         to: config.routes.home,
         separate: true,
         onClick: () => {
-            console.log('oke');
             localStorage.removeItem('shopz-tm-user');
             window.location.reload(false);
         },

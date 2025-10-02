@@ -1,8 +1,9 @@
 import { Fragment, useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { publicRoutes, privateRoutes, adminRoutes } from '~/routes';
 import { DefaultLayout } from './Layout';
 import { AuthContext } from '~/context/AuthContext';
+import config from './config';
 
 function App() {
     const { user } = useContext(AuthContext);
@@ -46,6 +47,12 @@ function App() {
                             />
                         );
                     })}
+                    {user?.role === 'admin' && (
+                        <Route
+                            path={config.routes.adminHome}
+                            element={<Navigate to={config.routes.adminHome} replace />}
+                        />
+                    )}
                 </Routes>
             </div>
         </Router>
