@@ -1,3 +1,28 @@
 .content-sidebar-only {
     margin-left: var(--default-sidebar-margin-left);
+
+    th,
+    td {
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .admin-search-label {
+        max-width: 350px;
+    }
+
+    .admin-search-result {
+        background: var(--default-bg-color);
+    }
+}
+
+@media (max-width: 992px) {
+    .admin-search,
+    .admin-group-search {
+        flex-direction: column;
+    }
+
+    .admin-search-label {
+        max-width: none !important;
+    }
 }

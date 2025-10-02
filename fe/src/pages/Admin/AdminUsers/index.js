@@ -1,67 +1,87 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './AdminUsers.scss';
 import { Button, Form, Table, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faUnlock } from '@fortawesome/free-solid-svg-icons';
-
-const USERS = [
-    { username: 'abc1', email: 'email1@gmail.com', phone: '0123456789', numOrders: 1, deleted: false },
-    { username: 'abc2', email: 'email2@gmail.com', phone: '0123456789', numOrders: 2, deleted: false },
-    { username: 'abc3', email: 'email3@gmail.com', phone: '0123456789', numOrders: 3, deleted: true },
-];
+import useDebounce from '~/hooks/useDebounce';
+import * as httpRequest from '~/utils/httpRequest';
 
 function AdminUsers() {
     const [searchUser, setSearchUser] = useState('');
+    const [searchStatus, setSearchStatus] = useState('');
+    const [allUsers, setAllUsers] = useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
     const [userInfo, setUserInfo] = useState('');
     const [showForm, setShowForm] = useState(false);
+
+    const debouncedValue = useDebounce(searchUser, 500);
+
+    useEffect(() => {
+        async function getData() {
+            const dataUsers = await httpRequest.get(
+                `users?search_input=${encodeURIComponent(debouncedValue)}&deleted=${searchStatus}`,
+            );
+
+            console.log('all Users:', dataUsers);
+            console.log('--------------------');
+
+            if (dataUsers.message) {
+                setErrorMessage(dataUsers.message);
+                setAllUsers([]);
+            } else {
+                setAllUsers(dataUsers.users);
+                setErrorMessage('');
+            }
+        }
+
+        getData();
+    }, [debouncedValue, searchStatus]);
 
     // show/hide form
     const handleCloseForm = () => setShowForm(false);
 
-    const handleShowForm = (e) => {
-        const userCurrInfo = USERS.find((user) => user.email.includes(e.target.value));
-        setUserInfo(userCurrInfo);
-        console.log(
-            userCurrInfo.deleted ? `Restore user: ${userCurrInfo.email}` : `Delete user: ${userCurrInfo.email}`,
-        );
+    //
+    const handleShowForm = async (e) => {
+        try {
+            const getUser = await httpRequest.get(`users/${e.target.value}`);
+            setUserInfo(getUser);
+            console.log(
+                getUser.deleted
+                    ? `Restore user form for user: ${getUser.email}`
+                    : `Delete user form for user: ${getUser.email}`,
+            );
+            console.log('--------------------');
 
-        setShowForm(true);
-    };
-
-    // search user
-    const handleChangeSearch = (e) => {
-        console.log('Search user:', e.target.value);
-
-        setSearchUser(e.target.value);
-    };
-
-    const handleSearch = () => {
-        console.log(
-            USERS.filter(
-                (user) =>
-                    user.email.includes(searchUser) ||
-                    user.username.includes(searchUser) ||
-                    user.phone.includes(searchUser),
-            ),
-        );
+            setShowForm(true);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
         <div className="admin-users">
             <h1 className="fs-1 fw-bold">Danh sách người dùng</h1>
-            <div className="admin-search">
-                <Form className="admin-search-user d-flex gap-3 fs-3">
-                    <Form.Control
-                        className="admin-search-label p-3 fs-4 rounded-4"
-                        type="search"
-                        placeholder="Tìm kiếm theo tên, emal, sđt..."
-                        aria-label="Search"
-                        onChange={handleChangeSearch}
-                    />
-                    <Button className="p-3 fs-4 rounded-4" onClick={handleSearch}>
-                        Search
-                    </Button>
-                </Form>
+            <div className="admin-search d-flex gap-4 mt-4">
+                <Form.Control
+                    className="admin-search-label px-4 py-3 fs-3 rounded-4"
+                    type="search"
+                    placeholder="Tìm kiếm theo tên, email, sđt"
+                    aria-label="Search"
+                    onChange={(e) => {
+                        setSearchUser(e.target.value);
+                    }}
+                />
+                <Form.Select
+                    className="admin-search-label px-4 py-3 fs-3 rounded-4"
+                    aria-label="Default select example"
+                    onChange={(e) => {
+                        setSearchStatus(e.target.value);
+                    }}
+                >
+                    <option value="">Tất cả</option>
+                    <option value="false">Đang hoạt động</option>
+                    <option value="true">Đã khóa</option>
+                </Form.Select>
             </div>
 
             <div className="admin-search-result mt-4 p-3 rounded-4 overflow-auto">
@@ -74,19 +94,19 @@ function AdminUsers() {
                             <th>Phone</th>
                             <th>Số đơn hàng</th>
                             <th>Trạng thái</th>
-                            <th></th>
+                            <th>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {USERS.length > 0 ? (
-                            USERS.map((user, key) => {
+                        {allUsers.length > 0 ? (
+                            allUsers.map((user, key) => {
                                 return (
                                     <tr key={++key}>
                                         <td>{++key}</td>
                                         <td>{user.email}</td>
                                         <td>{user.username}</td>
                                         <td>{user.phone}</td>
-                                        <td>{user.numOrders}</td>
+                                        <td>{user.numberOrder}</td>
                                         <td>
                                             {user.deleted ? (
                                                 <FontAwesomeIcon icon={faLock} />
@@ -98,7 +118,7 @@ function AdminUsers() {
                                             {user.deleted ? (
                                                 <Button
                                                     className="fs-4 text-primary text-decoration-underline bg-transparent border-0"
-                                                    value={user.email}
+                                                    value={user._id}
                                                     onClick={handleShowForm}
                                                 >
                                                     Khôi phục
@@ -106,7 +126,7 @@ function AdminUsers() {
                                             ) : (
                                                 <Button
                                                     className="fs-4 text-danger text-decoration-underline bg-transparent border-0"
-                                                    value={user.email}
+                                                    value={user._id}
                                                     onClick={handleShowForm}
                                                 >
                                                     Khóa
@@ -119,7 +139,7 @@ function AdminUsers() {
                         ) : (
                             <tr>
                                 <td className="text-center" colSpan={7}>
-                                    Chưa có người dùng
+                                    {errorMessage || 'Không tìm thấy người dùng'}
                                 </td>
                             </tr>
                         )}
@@ -132,7 +152,7 @@ function AdminUsers() {
                         <Modal.Title>{userInfo.deleted ? 'Khôi phục' : 'Khóa'} người dùng</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        Bạn muốn {userInfo.deleted ? 'khôi phục' : 'khóa'} người dùng {userInfo.email}?
+                        Bạn muốn {userInfo.deleted ? 'khôi phục' : 'khóa'} người dùng <strong>{userInfo.email}</strong>?
                     </Modal.Body>
                     <Modal.Footer>
                         <Button className="fs-4" variant="secondary" onClick={handleCloseForm}>

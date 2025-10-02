@@ -1,6 +1,9 @@
 import { Button, Table } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
 import './AdminOrders.scss';
 import images from '~/assets/images';
+import useDebounce from '~/hooks/useDebounce';
+import * as httpRequest from '~/utils/httpRequest';
 
 //example data
 const ORDER_ITEMS = [
@@ -29,10 +32,35 @@ const ORDER_ITEMS = [
 ];
 
 function AdminOrders() {
+    const [searchOrder, setSearchOrder] = useState('');
+    const [allOrders, setAllOrders] = useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const debouncedValue = useDebounce(searchOrder, 500);
+
+    useEffect(() => {
+        async function getData() {
+            const dataOrders = await httpRequest.get(`orders?search_input=${debouncedValue}`);
+
+            console.log('all orders:', dataOrders);
+            console.log('--------------------');
+
+            if (dataOrders.message) {
+                setErrorMessage(dataOrders.message);
+                setAllOrders([]);
+            } else {
+                setAllOrders(dataOrders.orders);
+                setErrorMessage('');
+            }
+        }
+
+        getData();
+    }, [debouncedValue]);
+
     return (
         <div className="admin-orders">
             <h1 className="fs-1 fw-bold">Danh sách đơn hàng</h1>
-            <div className="admin-order-result mt-4 p-3 rounded-4 overflow-auto">
+            <div className="admin-search-result mt-4 p-3 rounded-4 overflow-auto">
                 <Table className="m-0 text-center" hover>
                     <thead>
                         <tr>
@@ -43,12 +71,12 @@ function AdminOrders() {
                             <th>Số lượng</th>
                             <th>Tổng cộng</th>
                             <th>Trạng thái</th>
-                            <th></th>
+                            <th>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {ORDER_ITEMS.length > 0 ? (
-                            ORDER_ITEMS.map((order, key) => {
+                        {allOrders.length > 0 ? (
+                            allOrders.map((order, key) => {
                                 return (
                                     <tr key={++key}>
                                         <td>{++key}</td>
@@ -62,13 +90,15 @@ function AdminOrders() {
                                                 {order.nameProduct}
                                             </div>
                                         </td>
-                                        <td>{order.idOrder}</td>
+                                        <td>{order.partNumber}</td>
                                         <td>{order.price}₫</td>
-                                        <td>{order.numProduct}</td>
-                                        <td>{order.price * order.numProduct}₫</td>
-                                        <td className="fst-italic">{order.statusOrder}</td>
+                                        <td>{order.numberProduct}</td>
+                                        <td>{order.price * order.numberProduct}₫</td>
+                                        <td className="fst-italic">{order.status}</td>
                                         <td>
-                                            <Button className="fs-5">Cập nhật</Button>
+                                            <Button className="fs-4 text-primary text-decoration-underline bg-transparent border-0">
+                                                Cập nhật
+                                            </Button>
                                         </td>
                                     </tr>
                                 );
@@ -76,7 +106,7 @@ function AdminOrders() {
                         ) : (
                             <tr>
                                 <td className="text-center" colSpan={8}>
-                                    Chưa có đơn hàng
+                                    {errorMessage || 'Chưa có đơn hàng'}
                                 </td>
                             </tr>
                         )}

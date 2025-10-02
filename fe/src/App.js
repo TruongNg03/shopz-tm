@@ -48,10 +48,7 @@ function App() {
                         );
                     })}
                     {user?.role === 'admin' && (
-                        <Route
-                            path={config.routes.adminHome}
-                            element={<Navigate to={config.routes.adminHome} replace />}
-                        />
+                        <Route path="*" element={<Navigate to={config.routes.adminHome} replace />} />
                     )}
                 </Routes>
             </div>

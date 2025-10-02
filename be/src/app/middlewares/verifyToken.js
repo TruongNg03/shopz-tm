@@ -11,7 +11,7 @@ function verifyToken(req, res, next) {
     }
 
     if (!token) {
-      return res.status(401).json({ message: 'Chưa đăng nhập!' });
+      return res.status(401).json({ message: 'Chưa đăng nhập hoặc token hết hạn!' });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -24,7 +24,7 @@ function verifyToken(req, res, next) {
 
 function verifyAdmin(req, res, next) {
   if (!req.user) {
-    return res.status(401).json({ message: 'Chưa đăng nhập!' });
+    return res.status(401).json({ message: 'Chưa đăng nhập hoặc token hết hạn!' });
   }
 
   if (req.user.role?.toLowerCase() !== 'admin') {
