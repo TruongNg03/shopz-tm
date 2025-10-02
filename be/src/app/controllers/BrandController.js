@@ -8,7 +8,7 @@ class BrandController {
       .lean()
       .then((brands) => {
         if (brands.length > 0) {
-          res.status(200).json(brands);
+          res.status(200).json({ brands, total: brands.length });
         } else {
           res.status(404).json({ message: 'Không tìm thấy tên các hãng sản phẩm' });
         }

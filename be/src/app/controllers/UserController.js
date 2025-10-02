@@ -3,40 +3,52 @@ const User = require('../models/User');
 class UserController {
   // [GET] /users/:id
   getOneUser(req, res, next) {
-    User.findOne({ _id: req.params.id })
+    User.findOneWithDeleted({ _id: req.params.id })
       .then((user) => {
         if (user) {
           console.log('Get user with id:', req.params.id);
-          res.status(200).json({ user });
+          res.status(200).json(user);
         } else {
-          res.status(404).json({ mgs: 'Không tìm thấy người dùng' });
+          res.status(404).json({ message: 'Không tìm thấy người dùng' });
         }
       })
       .catch(next);
   }
 
-  // [GET] /users?id=...email=...&username=...&phone=...&banned=...
+  // [GET] /users?id=...email=...&username=...&phone=...&banned=...&search_input=...
   getUsers(req, res, next) {
-    const { id, email, username, phone, banned } = req.query;
+    const { id, email, username, phone, banned, search_input, deleted } = req.query;
 
-    const filter = {
+    let filter = {
       ...(id && { _id: id }),
       ...(email && { email: { $regex: email, $options: 'i' } }),
       ...(username && { username: { $regex: username, $options: 'i' } }),
       ...(phone && { phone: { $regex: phone, $options: 'i' } }),
       ...(banned && { banned: banned }),
+      ...(deleted && { deleted: deleted }),
     };
+
+    if (search_input) {
+      filter = {
+        ...filter,
+        $or: [
+          { email: { $regex: search_input, $options: 'i' } },
+          { username: { $regex: search_input, $options: 'i' } },
+          { phone: { $regex: search_input, $options: 'i' } },
+        ],
+      };
+    }
 
     // log query
     console.log('--Find User query:', filter);
 
-    User.find(filter)
+    User.findWithDeleted(filter)
       .lean()
       .then((users) => {
         if (users.length > 0) {
-          res.status(200).json({ users });
+          res.status(200).json({ users, total: users.length });
         } else {
-          res.status(404).json({ mgs: 'Không tìm thấy người dùng' });
+          res.status(404).json({ message: 'Không tìm thấy người dùng' });
         }
       })
       .catch(next);

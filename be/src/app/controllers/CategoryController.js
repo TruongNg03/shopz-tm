@@ -8,7 +8,7 @@ class CategoryController {
       .lean()
       .then((categories) => {
         if (categories.length > 0) {
-          res.status(200).json(categories);
+          res.status(200).json({ categories, total: categories.length });
         } else {
           res.status(404).json({ message: 'Không tìm thấy tên các loại sản phẩm' });
         }
