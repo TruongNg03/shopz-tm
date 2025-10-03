@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
-function verifyToken(req, res, next) {
+async function verifyToken(req, res, next) {
   try {
     let token = null;
 
@@ -15,9 +16,21 @@ function verifyToken(req, res, next) {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    // Check user trong DB
+    const user = await User.findOneWithDeleted({ _id: decoded._id });
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    // Nếu là user thường và bị khóa thì logout
+    if (user.role !== 'admin' && user.deleted === true) {
+      return res.status(403).json({ message: 'Tài khoản đã bị khóa, vui lòng liên hệ với admin!' });
+    }
+
+    req.user = user;
     next();
   } catch (err) {
+    console.log(err);
     return res.status(403).json({ message: 'Token không hợp lệ hoặc đã hết hạn!' });
   }
 }

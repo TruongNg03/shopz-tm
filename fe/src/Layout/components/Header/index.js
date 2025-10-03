@@ -74,8 +74,8 @@ function Header() {
         }
 
         async function getData() {
-            const data = await httpRequest.get(`products?search_input=${searchInput}`);
-            console.log('search text:', searchInput);
+            const data = await httpRequest.get(`products?search_input=${debouncedValue}`);
+            console.log('search text:', debouncedValue);
             console.log('search results:', data);
 
             if (data.message) {
@@ -196,7 +196,7 @@ function Header() {
                                     <Tippy
                                         placement="bottom-end"
                                         interactive
-                                        visible
+                                        // visible
                                         render={() => (
                                             <MenuTooltip
                                                 header="Thiết lập hệ thống"

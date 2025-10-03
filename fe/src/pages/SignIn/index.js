@@ -205,6 +205,7 @@ function SignIn() {
             <div className="form-box login">
                 <form action="">
                     <h1>Login</h1>
+                    <p className="mb-2 fs-4 text-danger">Bạn đã đăng nhập</p>
                     <div className="input-box">
                         <input type="email" placeholder="Email" onChange={getLoginEmail} required />
                         <FontAwesomeIcon className="input-icon" icon={faUser} />
@@ -222,7 +223,7 @@ function SignIn() {
                     <button type="submit" className="submit-btn" disabled={user} onClick={handleLoginAccount}>
                         Login
                     </button>
-                    <p>or login with social platforms</p>
+                    <p className="mt-2">or login with social platforms</p>
                     <div className="social-icons">
                         <a href="#">
                             <FontAwesomeIcon icon={faGoogle} />
@@ -296,13 +297,6 @@ function SignIn() {
             {errorText && showError && (
                 <div className={cx('error-message')}>
                     <p>{errorText}</p>
-                </div>
-            )}
-
-            {/* show alert when logged in */}
-            {user && (
-                <div className={cx('error-message')}>
-                    <p>Bạn đã đăng nhập</p>
                 </div>
             )}
         </div>

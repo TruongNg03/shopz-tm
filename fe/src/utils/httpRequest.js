@@ -1,4 +1,5 @@
 import axios from 'axios';
+import config from '~/config';
 
 const httpRequest = axios.create({
     baseURL: 'http://localhost:8888/',
@@ -109,5 +110,18 @@ export const remove = async (path, data) => {
         }
     }
 };
+
+httpRequest.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        console.log(error);
+
+        if (error.response && error.response.status === 403) {
+            localStorage.removeItem('shopz-tm-user');
+            window.location.href = config.routes.home;
+        }
+        return Promise.reject(error);
+    },
+);
 
 export default httpRequest;
