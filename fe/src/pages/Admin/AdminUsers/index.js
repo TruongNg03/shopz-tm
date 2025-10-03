@@ -11,8 +11,9 @@ function AdminUsers() {
     const [searchStatus, setSearchStatus] = useState('');
     const [allUsers, setAllUsers] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
-    const [userInfo, setUserInfo] = useState('');
+    const [userInfo, setUserInfo] = useState({});
     const [showForm, setShowForm] = useState(false);
+    const [reloadData, setReloadData] = useState(false);
 
     const debouncedValue = useDebounce(searchUser, 500);
 
@@ -22,6 +23,10 @@ function AdminUsers() {
                 `users?search_input=${encodeURIComponent(debouncedValue)}&deleted=${searchStatus}`,
             );
 
+            console.log('query:', {
+                search_input: debouncedValue,
+                deleted: searchStatus,
+            });
             console.log('all Users:', dataUsers);
             console.log('--------------------');
 
@@ -35,27 +40,50 @@ function AdminUsers() {
         }
 
         getData();
-    }, [debouncedValue, searchStatus]);
+    }, [debouncedValue, searchStatus, reloadData]);
 
-    // show/hide form
-    const handleCloseForm = () => setShowForm(false);
+    // hide form
+    const handleCloseForm = () => {
+        setShowForm(false);
+        setUserInfo({});
+    };
 
-    //
+    // show form
     const handleShowForm = async (e) => {
         try {
             const getUser = await httpRequest.get(`users/${e.target.value}`);
             setUserInfo(getUser);
+
             console.log(
                 getUser.deleted
                     ? `Restore user form for user: ${getUser.email}`
                     : `Delete user form for user: ${getUser.email}`,
             );
+            console.log(`deleted: ${getUser.deleted}`);
             console.log('--------------------');
 
             setShowForm(true);
         } catch (error) {
             console.log(error);
         }
+    };
+
+    // enabled/disabled user
+    const handleChangeUserStatus = async () => {
+        let res;
+        if (userInfo.deleted) {
+            res = await httpRequest.patch(`users/restore-user?id=${userInfo._id}`);
+        } else {
+            res = await httpRequest.remove(`users/delete-temporary-user?id=${userInfo._id}`);
+        }
+
+        if (res.message) {
+            console.log(res.message);
+        } else {
+            console.log(res.data.message);
+        }
+        setShowForm(false);
+        setReloadData(!reloadData);
     };
 
     return (
@@ -78,7 +106,7 @@ function AdminUsers() {
                         setSearchStatus(e.target.value);
                     }}
                 >
-                    <option value="">Tất cả</option>
+                    <option value="">Chọn trạng thái</option>
                     <option value="false">Đang hoạt động</option>
                     <option value="true">Đã khóa</option>
                 </Form.Select>
@@ -158,7 +186,11 @@ function AdminUsers() {
                         <Button className="fs-4" variant="secondary" onClick={handleCloseForm}>
                             Hủy
                         </Button>
-                        <Button className="fs-4" variant={userInfo.deleted ? 'primary' : 'danger'}>
+                        <Button
+                            className="fs-4"
+                            variant={userInfo.deleted ? 'primary' : 'danger'}
+                            onClick={handleChangeUserStatus}
+                        >
                             {userInfo.deleted ? 'Khôi phục' : 'Khóa'}
                         </Button>
                     </Modal.Footer>
