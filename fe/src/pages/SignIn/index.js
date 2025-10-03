@@ -115,7 +115,7 @@ function SignIn() {
             setUserAlertText('Password cannot be empty');
             return false;
         } else if (password.length < 8 || password.length > 30) {
-            setUserAlertText('Invalid email format');
+            setUserAlertText('Invalid password format');
             return false;
         } else {
             setShowAlertText(false);

@@ -13,6 +13,7 @@ const User = new Schema(
     banned: { type: Boolean, default: false },
     // type ['user', 'admin']
     role: { type: String, default: 'user' },
+    deleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,

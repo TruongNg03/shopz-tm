@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const bcrypt = require('bcrypt');
 
 class UserController {
   // [GET] /users/:id
@@ -57,11 +58,44 @@ class UserController {
   // update user
   // [PATCH] /users/update?id=...
   updateUser(req, res, next) {
-    User.updateOne({ _id: req.query.id }, req.body)
-      .lean()
-      .then(() => {
-        console.log(`--Updated user with id: ${req.query.id}`);
-        res.status(200).json({ message: 'Đã cập nhật thông tin người dùng' });
+    const { newPassword, currentPassword, ...updateData } = req.body;
+
+    // User.updateOne({ _id: req.query.id }, req.body)
+    //   .then(() => {
+    //     console.log(`--Updated user with id: ${req.query.id}`);
+    //     res.status(200).json({
+    //       message: req.body.newPassword ? 'Đã thay đổi mật khẩu' : 'Đã cập nhật thông tin người dùng',
+    //     });
+    //   })
+    //   .catch(next);
+
+    User.findById({ _id: req.query.id })
+      .then(async (user) => {
+        if (!user) {
+          return res.status(404).json({ message: 'Người dùng không tồn tại' });
+        }
+
+        if (newPassword) {
+          const isMatch = await bcrypt.compare(currentPassword, user.password);
+          if (!isMatch) {
+            return res.status(401).json({ message: 'Mật khẩu hiện tại không đúng' });
+          }
+
+          const salt = await bcrypt.genSalt(10);
+          user.password = await bcrypt.hash(newPassword, salt);
+        }
+
+        Object.assign(user, updateData);
+        user.save();
+
+        console.log(
+          `--user with id: ${req.query.id}`,
+          req.body.newPassword ? 'Đã thay đổi mật khẩu' : 'Đã cập nhật thông tin người dùng',
+        );
+
+        res.status(200).json({
+          message: req.body.newPassword ? 'Đã thay đổi mật khẩu' : 'Đã cập nhật thông tin người dùng',
+        });
       })
       .catch(next);
   }
@@ -71,9 +105,12 @@ class UserController {
   // [DELETE] /users/delete-temporary-user?id=...
   deleteTemporaryUser(req, res, next) {
     User.delete({ _id: req.query.id })
-      .then(() => {
+      .then((result) => {
+        if (result.deletedCount === 0) {
+          return res.status(404).json({ message: 'Người dùng không tồn tại' });
+        }
         console.log(`--Deleted temporary User with id: ${req.query.id}`);
-        res.status(200).json({ message: 'Đã khóa người dùng' });
+        return res.status(200).json({ message: 'Đã khóa người dùng' });
       })
       .catch(next);
   }
@@ -82,9 +119,12 @@ class UserController {
   // [DELETE] /users/delete-permanent-user?id...
   deletePermanentUser(req, res, next) {
     User.deleteOne({ _id: req.query.id })
-      .then(() => {
+      .then((result) => {
+        if (result.deletedCount === 0) {
+          return res.status(404).json({ message: 'Người dùng không tồn tại' });
+        }
         console.log(`--Deleted permanent User with id: ${req.query.id}`);
-        res.status(200).json({ message: 'Đã xóa người dùng' });
+        return res.status(204).send();
       })
       .catch(next);
   }
@@ -93,9 +133,15 @@ class UserController {
   // [PATCH] /users/restore-user?id=...
   restoreUser(req, res, next) {
     User.restore({ _id: req.query.id })
-      .then(() => {
+      .then(async (result) => {
+        if (result.nModified === 0) {
+          return res.status(404).json({ message: 'Người dùng không tồn tại hoặc chưa bị khóa' });
+        }
+
+        await User.updateOne({ _id: req.query.id }, { $set: { deleted: false } });
+
         console.log(`--Restored User with id: ${req.query.id}`);
-        res.status(200).json({ message: 'Đã mở khóa người dùng' });
+        return res.status(200).json({ message: 'Đã mở khóa người dùng' });
       })
       .catch(next);
   }

@@ -15,7 +15,7 @@ class SignInController {
     });
 
     // check email
-    User.findOne({ email: req.body.email })
+    User.findOneWithDeleted({ email: req.body.email })
       .then((user) => {
         if (user) {
           return res.status(400).json({ message: 'Tài khoản đã tồn tại!' });
@@ -35,13 +35,13 @@ class SignInController {
   login(req, res, next) {
     const currUserLogin = req.body;
 
-    User.findOne({ email: req.body.email })
+    User.findOneWithDeleted({ email: req.body.email })
       .then((user) => {
         if (!user) {
           return res.status(400).json({ message: 'Tài khoản không tồn tại!' });
         } else {
           // check banned account
-          if (user.banned) {
+          if (user.deleted) {
             return res.status(400).json({ message: 'Tài khoản đã bị khóa!' });
           }
 
@@ -56,9 +56,18 @@ class SignInController {
               console.log('-- ' + user.email + ' login');
 
               // generate token
-              const token = jwt.sign({ _id: user._id, email: user.email, role: user.role }, process.env.JWT_SECRET, {
-                expiresIn: '1d',
-              });
+              const token = jwt.sign(
+                {
+                  _id: user._id,
+                  email: user.email,
+                  role: user.role,
+                  deleted: user.deleted,
+                },
+                process.env.JWT_SECRET,
+                {
+                  expiresIn: '1d',
+                },
+              );
 
               res
                 .cookie('access_token', token, {
@@ -66,7 +75,13 @@ class SignInController {
                   sameSite: 'strict',
                 })
                 .status(200)
-                .json({ _id: user._id, email: user.email, role: user.role, token: token });
+                .json({
+                  _id: user._id,
+                  email: user.email,
+                  role: user.role,
+                  deleted: user.deleted,
+                  token: token,
+                });
             })
             .catch(next);
         }
