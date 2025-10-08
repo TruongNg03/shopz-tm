@@ -131,6 +131,20 @@ function AdminProducts() {
         }
     };
 
+    const handleDeleteProduct = async (productId) => {
+        try {
+            await httpRequest.remove(`products/delete-permanent?id=${productId}`);
+
+            setAllProducts((prev) => prev.filter((product) => product._id !== productId));
+
+            console.log('delete product:', productId);
+            alert('Xóa sản phẩm thành công!');
+        } catch (error) {
+            console.error(error);
+            alert(error.response?.data?.message || 'Lỗi khi xóa sản phẩm');
+        }
+    };
+
     return (
         <div className="admin-products">
             <div className="admin-add-product">
@@ -446,6 +460,7 @@ function AdminProducts() {
                                     showOverView={false}
                                     separate={idx < allProducts.length - 1}
                                     admin
+                                    onDeleteProduct={(id) => handleDeleteProduct(id)}
                                 />
                             );
                         })

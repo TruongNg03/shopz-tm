@@ -5,33 +5,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { NavLink } from 'react-router-dom';
 
-// example
-// const productItem = {
-//     linkImg: images.introduction1,
-//     title: 'Title',
-//     text: 'Text',
-//     linkTo: '/#',
-//     price: '10',
-//     status: 'Có hàng',
-//     nameProduct: 'AN-515',
-//     contentProduct: [
-//         'line Windows 11 Home SL',
-//         'CPU Intel® Core™ Ultra 7 Processor 155H',
-//         'Card đồ họa NVIDIA® GeForce RTX™ 4060',
-//     ],
-//     detailProduct: [
-//         'Hệ điều hành : Windows 11 Home',
-//         'Kiến trúc hệ điều hành : 64-bit',
-//         'Nhà sản xuất : Intel',
-//         'Dòng CPU : Core™ i3',
-//         'Số hiệu CPU : Intel® Core™ i3-1215U, 6 nhân 8 luồng',
-//         'Tốc độ xung nhịp : 1.2 GHz - 4.4 GHz',
-//         'Bộ nhớ trang bị sẵn : 8GB',
-//     ],
-//     overview: 'abcd',
-// };
-
-function ProductItem({ product = {}, showOverView = true, separate = false, admin = false }) {
+function ProductItem({ product = {}, showOverView = true, separate = false, admin = false, onDeleteProduct }) {
     const [showDeleteForm, setShowDeleteForm] = useState(false);
 
     const handleCloseDeleteForm = () => setShowDeleteForm(false);
@@ -118,12 +92,21 @@ function ProductItem({ product = {}, showOverView = true, separate = false, admi
                             <Modal.Header closeButton>
                                 <Modal.Title>Xóa sản phẩm</Modal.Title>
                             </Modal.Header>
-                            <Modal.Body>Bạn muốn xóa sản phẩm '...'?</Modal.Body>
+                            <Modal.Body>
+                                Bạn muốn xóa sản phẩm <strong>{product.nameProduct}</strong>?
+                            </Modal.Body>
                             <Modal.Footer>
                                 <Button className="fs-4" variant="secondary" onClick={handleCloseDeleteForm}>
                                     Hủy
                                 </Button>
-                                <Button className="fs-4" variant="danger">
+                                <Button
+                                    className="fs-4"
+                                    variant="danger"
+                                    onClick={() => {
+                                        onDeleteProduct(product._id);
+                                        handleCloseDeleteForm();
+                                    }}
+                                >
                                     Xóa
                                 </Button>
                             </Modal.Footer>
