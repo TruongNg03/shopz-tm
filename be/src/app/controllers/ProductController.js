@@ -40,6 +40,10 @@ class ProductController {
   // create product
   // [POST] /products/create
   createProduct(req, res, next) {
+    if (req.file) {
+      req.body.img = `img/product/${req.file.filename}`;
+    }
+
     const createProduct = new Product(req.body);
 
     Product.findOne({ partNumber: createProduct.partNumber })

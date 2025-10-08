@@ -17,6 +17,22 @@ function AdminProducts() {
     const [errorMessage, setErrorMessage] = useState('');
     const [currentBrand, setCurrentBrand] = useState('');
     const [currentCategory, setCurrentCategory] = useState('');
+    const [newProduct, setNewProduct] = useState({
+        img: '',
+        partNumber: '',
+        price: '',
+        status: '',
+        description: [''],
+        overview: '',
+        shortDescription: [''],
+        shortOverview: '',
+        title: '',
+        brand: '',
+        nameProduct: '',
+        category: '',
+        numberProduct: 1,
+    });
+    const [disabledCreateForm, setDisabledCreateForm] = useState(true);
 
     const debouncedValue = useDebounce(searchInput, 500);
 
@@ -59,6 +75,62 @@ function AdminProducts() {
         getData();
     }, [debouncedValue, currentBrand, currentCategory]);
 
+    useEffect(() => {
+        const { title, nameProduct, price, partNumber, numberProduct } = newProduct;
+        const disabled = !title.trim() || !nameProduct.trim() || !price || !partNumber.trim() || !numberProduct;
+        setDisabledCreateForm(disabled);
+    }, [newProduct]);
+
+    const handleCreateProduct = async (e) => {
+        e.preventDefault();
+
+        try {
+            const formData = new FormData();
+
+            if (newProduct.img instanceof File) {
+                formData.append('image-product', newProduct.img);
+            }
+
+            Object.entries(newProduct).forEach(([key, value]) => {
+                if (key === 'img') return;
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => formData.append(`${key}[]`, v));
+                } else {
+                    formData.append(key, value);
+                }
+            });
+
+            const res = await httpRequest.post('products/create', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            console.log('Response:', res.data);
+            console.log('new product:', newProduct);
+
+            setModalShow(false);
+            setNewProduct({
+                img: '',
+                partNumber: '',
+                price: '',
+                status: '',
+                description: [''],
+                linkTo: '',
+                overview: '',
+                shortDescription: [''],
+                shortOverview: '',
+                title: '',
+                brand: '',
+                nameProduct: '',
+                category: '',
+                numberProduct: 1,
+            });
+            alert('Thêm sản phẩm thành công!');
+        } catch (error) {
+            console.error(error);
+            alert(error.response?.data?.message || 'Lỗi khi thêm sản phẩm');
+        }
+    };
+
     return (
         <div className="admin-products">
             <div className="admin-add-product">
@@ -70,48 +142,243 @@ function AdminProducts() {
                 <AddForm
                     show={modalShow}
                     title="Thêm sản phẩm"
+                    disabled={disabledCreateForm}
                     onHide={() => setModalShow(false)}
-                    onSubmit={() => setModalShow(false)}
+                    onSubmit={handleCreateProduct}
                 >
-                    <Form>
+                    <Form id="add-product-form" onSubmit={handleCreateProduct}>
                         <Form.Group controlId="formFile" className="mb-3">
-                            <Form.Label>Image</Form.Label>
-                            <Form.Control type="file" size="lg" />
+                            <Form.Label>Ảnh (img)</Form.Label>
+                            <Form.Control
+                                type="file"
+                                size="lg"
+                                onChange={(e) => {
+                                    setNewProduct({ ...newProduct, img: e.target.files[0] });
+                                    console.log(e.target.files[0]?.name);
+                                }}
+                            />
                         </Form.Group>
-                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            <Form.Label>Title</Form.Label>
-                            <Form.Control type="text" placeholder="Title" size="lg" />
+
+                        <Form.Group className="mb-3">
+                            <Form.Label className="d-flex gap-1">
+                                Title <p className="m-0 text-center text-danger">*</p>
+                            </Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Example: Title 1"
+                                size="lg"
+                                required
+                                value={newProduct.title}
+                                onChange={(e) => {
+                                    setNewProduct({ ...newProduct, title: e.target.value });
+                                }}
+                            />
                         </Form.Group>
-                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            <Form.Label>Text</Form.Label>
-                            <Form.Control type="text" placeholder="Text" size="lg" />
+
+                        <Form.Group className="mb-3">
+                            <Form.Label className="d-flex gap-1">
+                                Tên sản phẩm <p className="m-0 text-center text-danger">*</p>
+                            </Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Example: product 1"
+                                size="lg"
+                                required
+                                value={newProduct.nameProduct}
+                                onChange={(e) => {
+                                    setNewProduct({ ...newProduct, nameProduct: e.target.value });
+                                }}
+                            />
                         </Form.Group>
-                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            <Form.Label>Name Product</Form.Label>
-                            <Form.Control type="text" placeholder="Name Product" size="lg" />
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            <Form.Label>Price</Form.Label>
-                            <Form.Control type="text" placeholder="Price" size="lg" />
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-                            <Form.Label>Content Product</Form.Label>
-                            <Form.Control as="textarea" size="lg" rows={3} />
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-                            <Form.Label>Detail Product</Form.Label>
-                            <Form.Control as="textarea" size="lg" rows={3} />
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-                            <Form.Label>Overview</Form.Label>
-                            <Form.Control as="textarea" size="lg" rows={3} />
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Label>Status</Form.Label>
-                            <Form.Select size="lg" aria-label="Default select example" defaultValue="1">
-                                <option value="1">Có hàng</option>
-                                <option value="2">Hết hàng</option>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Hãng</Form.Label>
+                            <Form.Select
+                                aria-label="Default select example"
+                                size="lg"
+                                value={newProduct.brand}
+                                onChange={(e) =>
+                                    setNewProduct({
+                                        ...newProduct,
+                                        brand: e.target.value,
+                                    })
+                                }
+                            >
+                                <option value="">Chọn hãng</option>
+                                {allBrands.map((brand) => (
+                                    <option key={brand.key} value={brand.key}>
+                                        {brand.name}
+                                    </option>
+                                ))}
                             </Form.Select>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Danh mục</Form.Label>
+                            <Form.Select
+                                aria-label="Default select example"
+                                size="lg"
+                                value={newProduct.category}
+                                onChange={(e) =>
+                                    setNewProduct({
+                                        ...newProduct,
+                                        category: e.target.value,
+                                    })
+                                }
+                            >
+                                <option value="">Chọn danh mục</option>
+                                {allCategories.map((category) => (
+                                    <option key={category.key} value={category.key}>
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </Form.Select>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label className="d-flex gap-1">
+                                Số lượng <p className="m-0 text-center text-danger">*</p>
+                            </Form.Label>
+                            <Form.Control
+                                type="number"
+                                size="lg"
+                                required
+                                value={newProduct.numberProduct || ''}
+                                onChange={(e) => {
+                                    setNewProduct({ ...newProduct, numberProduct: e.target.value });
+                                }}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label className="d-flex gap-1">
+                                Part Number <p className="m-0 text-center text-danger">*</p>
+                            </Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Example: AA.AAAAA.000"
+                                size="lg"
+                                required
+                                value={newProduct.partNumber}
+                                onChange={(e) => {
+                                    setNewProduct({ ...newProduct, partNumber: e.target.value.trim() });
+                                }}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label className="d-flex gap-1">
+                                Giá <p className="m-0 text-center text-danger">*</p>
+                            </Form.Label>
+                            <Form.Control
+                                type="number"
+                                placeholder="VD: 10"
+                                size="lg"
+                                required
+                                value={newProduct.price}
+                                onChange={(e) => {
+                                    setNewProduct({ ...newProduct, price: e.target.value });
+                                }}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Trạng thái</Form.Label>
+                            <Form.Select
+                                size="lg"
+                                value={newProduct.status}
+                                onChange={(e) => setNewProduct({ ...newProduct, status: e.target.value })}
+                            >
+                                <option value="">Chọn trạng thái</option>
+                                <option value="Còn hàng">Còn hàng</option>
+                                <option value="Hết hàng">Hết hàng</option>
+                            </Form.Select>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Mô tả ngắn (shortDescription)</Form.Label>
+                            {newProduct.shortDescription.map((desc, idx) => (
+                                <Form.Control
+                                    key={idx}
+                                    className="mb-2"
+                                    type="text"
+                                    placeholder={`Mô tả ngắn ${idx + 1}`}
+                                    size="lg"
+                                    value={desc}
+                                    onChange={(e) => {
+                                        const updated = [...newProduct.shortDescription];
+                                        updated[idx] = e.target.value;
+                                        setNewProduct({ ...newProduct, shortDescription: updated });
+                                    }}
+                                />
+                            ))}
+                            <Button
+                                size="lg"
+                                onClick={() =>
+                                    setNewProduct({
+                                        ...newProduct,
+                                        shortDescription: [...newProduct.shortDescription, ''],
+                                    })
+                                }
+                            >
+                                + Thêm dòng
+                            </Button>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Mô tả chi tiết (description)</Form.Label>
+                            {newProduct.description.map((desc, idx) => (
+                                <Form.Control
+                                    key={idx}
+                                    className="mb-2"
+                                    type="text"
+                                    placeholder={`Mô tả chi tiết ${idx + 1}`}
+                                    size="lg"
+                                    value={desc}
+                                    onChange={(e) => {
+                                        const updated = [...newProduct.description];
+                                        updated[idx] = e.target.value;
+                                        setNewProduct({ ...newProduct, description: updated });
+                                    }}
+                                />
+                            ))}
+                            <Button
+                                size="lg"
+                                onClick={() =>
+                                    setNewProduct({
+                                        ...newProduct,
+                                        description: [...newProduct.description, ''],
+                                    })
+                                }
+                            >
+                                + Thêm dòng
+                            </Button>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Overview</Form.Label>
+                            <Form.Control
+                                type="text"
+                                as="textarea"
+                                rows={3}
+                                placeholder="Example: Overview 1"
+                                size="lg"
+                                value={newProduct.overview}
+                                onChange={(e) => setNewProduct({ ...newProduct, overview: e.target.value })}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Short Overview</Form.Label>
+                            <Form.Control
+                                type="text"
+                                as="textarea"
+                                rows={3}
+                                placeholder="Example: Short overview 1"
+                                size="lg"
+                                value={newProduct.shortOverview}
+                                onChange={(e) => setNewProduct({ ...newProduct, shortOverview: e.target.value })}
+                            />
                         </Form.Group>
                     </Form>
                 </AddForm>

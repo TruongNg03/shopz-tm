@@ -205,7 +205,7 @@ function SignIn() {
             <div className="form-box login">
                 <form action="">
                     <h1>Login</h1>
-                    <p className="mb-2 fs-4 text-danger">Bạn đã đăng nhập</p>
+                    {user && <p className="mb-2 fs-4 text-danger">Bạn đã đăng nhập</p>}
                     <div className="input-box">
                         <input type="email" placeholder="Email" onChange={getLoginEmail} required />
                         <FontAwesomeIcon className="input-icon" icon={faUser} />

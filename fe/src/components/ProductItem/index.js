@@ -40,14 +40,23 @@ function ProductItem({ product = {}, showOverView = true, separate = false, admi
     return (
         <div>
             <div className="product-item py-5 px-3">
-                <NavLink to={`/products/${product._id}`} className="product-img my-5">
-                    <img className="w-100 object-fit-contain" src={product.linkImg} alt={product.nameProduct} />
+                <NavLink
+                    to={`/products/${product._id}`}
+                    className="product-img w-100 my-5"
+                    onClick={(e) => admin && e.preventDefault()}
+                >
+                    <img
+                        className="w-100 object-fit-contain"
+                        src={`${process.env.REACT_APP_BASE_API_URL}${product.img}`}
+                        alt={product.nameProduct}
+                    />
                 </NavLink>
 
-                <div className="overview d-flex flex-column px-5">
+                <div className="overview flex-grow-1 d-flex flex-column px-5">
                     <NavLink
                         className="name-product mb-4 fs-1 fw-bold text-black text-decoration-none"
                         to={`/products/${product._id}`}
+                        onClick={(e) => admin && e.preventDefault()}
                     >
                         {product.nameProduct}
                     </NavLink>

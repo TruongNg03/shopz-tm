@@ -44,13 +44,13 @@ function AllProducts() {
             if (dataBrands.message) {
                 setAllBrands([]);
             } else {
-                setAllBrands(dataBrands);
+                setAllBrands(dataBrands.brands);
             }
 
             if (dataCategories.message) {
                 setAllCategories([]);
             } else {
-                setAllCategories(dataCategories);
+                setAllCategories(dataCategories.categories);
             }
         }
 

@@ -76,6 +76,7 @@ function Profile() {
                 currentPassword: '',
                 newPassword: '',
             });
+            setErrorMessage('');
             alert(res.data.message);
         }
     };

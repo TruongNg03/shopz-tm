@@ -2,7 +2,7 @@ import axios from 'axios';
 import config from '~/config';
 
 const httpRequest = axios.create({
-    baseURL: 'http://localhost:8888/',
+    baseURL: process.env.REACT_APP_BASE_API_URL,
 });
 
 httpRequest.interceptors.request.use(
