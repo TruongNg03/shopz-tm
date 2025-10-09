@@ -44,6 +44,17 @@ class ProductController {
       req.body.img = `img/product/${req.file.filename}`;
     }
 
+    const fieldsToParse = ['shortDescription', 'description', 'overview', 'shortOverview'];
+    fieldsToParse.forEach((field) => {
+      if (req.body[field]) {
+        try {
+          req.body[field] = JSON.parse(req.body[field]);
+        } catch (err) {
+          console.warn(`Không parse được ${field}`, err);
+        }
+      }
+    });
+
     const createProduct = new Product(req.body);
 
     Product.findOne({ partNumber: createProduct.partNumber })
