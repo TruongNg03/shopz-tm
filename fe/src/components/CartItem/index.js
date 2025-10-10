@@ -67,7 +67,9 @@ function CartItem({
                 <div className="item-specification p-3">
                     <div className="content-specification">
                         <p className="fs-2 fw-bold text-uppercase mb-2">{product.price + '₫'}</p>
-                        <p className="fs-5 fw-bold text-uppercase">{product.status}</p>
+                        <p className="fs-5 fw-bold text-uppercase">
+                            {product.status === 'in-stock' ? 'Còn hàng' : 'Hết hàng'}
+                        </p>
                         <ul className="pt-3 fs-4">
                             {product.shortDescription.map((info, key) => (
                                 <li key={key++}>{info}</li>

@@ -9,7 +9,6 @@ import * as httpRequest from '~/utils/httpRequest';
 
 function AdminProducts() {
     const [modalShow, setModalShow] = useState(false);
-
     const [searchInput, setSearchInput] = useState('');
     const [allProducts, setAllProducts] = useState([]);
     const [allBrands, setAllBrands] = useState([]);
@@ -64,6 +63,22 @@ function AdminProducts() {
         } catch (error) {
             console.error(error);
             alert(error.response?.data?.message || 'Lỗi khi thêm sản phẩm');
+        }
+    };
+
+    const handleEditProduct = async (formData, id) => {
+        try {
+            const res = await httpRequest.put(`products/edit?id=${id}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+
+            console.log(res);
+            setAllProducts((prevProducts) =>
+                prevProducts.map((p) => (p._id === id ? { ...p, ...res.data.product } : p)),
+            );
+        } catch (err) {
+            console.error(err);
+            alert('Lỗi khi cập nhật sản phẩm');
         }
     };
 
@@ -160,6 +175,7 @@ function AdminProducts() {
                                     separate={idx < allProducts.length - 1}
                                     admin
                                     onDeleteProduct={(id) => handleDeleteProduct(id)}
+                                    onEditProduct={handleEditProduct}
                                 />
                             );
                         })

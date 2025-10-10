@@ -4,7 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import * as httpRequest from '~/utils/httpRequest';
 
-function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
+function AddForm({ productEdit, show = false, edit = false, title, disabled, onHide, onSubmit }) {
     const [allBrands, setAllBrands] = useState([]);
     const [allCategories, setAllCategories] = useState([]);
     const [newProduct, setNewProduct] = useState({
@@ -23,6 +23,20 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
         overview: '',
     });
     const [imgFile, setImgFile] = useState(null);
+
+    useEffect(() => {
+        if (edit && productEdit) {
+            setNewProduct({
+                ...productEdit,
+                shortDescription: Array.isArray(productEdit.shortDescription)
+                    ? productEdit.shortDescription.map((line) => `${line}`).join('\n')
+                    : productEdit.shortDescription || '',
+                description: Array.isArray(productEdit.description)
+                    ? productEdit.description.map((line) => `${line}`).join('\n')
+                    : productEdit.description || '',
+            });
+        }
+    }, [edit, productEdit]);
 
     useEffect(() => {
         async function getData() {
@@ -51,18 +65,19 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
             ...newProduct,
             shortDescription: newProduct.shortDescription
                 ?.split('\n')
-                .map((line) => line.replace(/^-+\s*/, '').trim())
+                .map((line) => line.trim())
                 .filter((line) => line !== ''),
             description: newProduct.description
                 ?.split('\n')
-                .map((line) => line.replace(/^-+\s*/, '').trim())
+                .map((line) => line.trim())
                 .filter((line) => line !== ''),
         };
 
         const formData = new FormData();
         Object.entries(processedProduct).forEach(([key, value]) => {
+            if (key === 'img') return;
             if (Array.isArray(value)) {
-                formData.append(key, JSON.stringify(value));
+                value.forEach((v) => formData.append(`${key}[]`, v));
             } else {
                 formData.append(key, value);
             }
@@ -70,9 +85,11 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
 
         if (imgFile) {
             formData.append('image-product', imgFile);
+        } else if (edit && newProduct.img) {
+            formData.append('image-product', newProduct.img);
         }
 
-        onSubmit(formData);
+        onSubmit(formData, newProduct._id);
     };
 
     return (
@@ -94,8 +111,9 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
             <Modal.Body>
                 <Form id="add-product-form" onSubmit={handleSubmit}>
                     <Form.Group controlId="formFile" className="mb-3">
-                        <Form.Label>Ảnh (img)</Form.Label>
+                        <Form.Label>Ảnh (Image)</Form.Label>
                         <Form.Control
+                            className=" fs-4"
                             type="file"
                             size="lg"
                             onChange={(e) => {
@@ -109,6 +127,7 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
                             Title <p className="m-0 text-center text-danger">*</p>
                         </Form.Label>
                         <Form.Control
+                            className=" fs-4"
                             name="title"
                             type="text"
                             placeholder="Example: Title 1"
@@ -124,6 +143,7 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
                             Tên sản phẩm <p className="m-0 text-center text-danger">*</p>
                         </Form.Label>
                         <Form.Control
+                            className=" fs-4"
                             name="nameProduct"
                             type="text"
                             placeholder="Example: product 1"
@@ -137,11 +157,17 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
                     <Form.Group className="mb-3">
                         <Form.Label>Hãng</Form.Label>
                         <Form.Select
+                            className=" fs-4"
                             name="brand"
                             aria-label="Default select example"
                             size="lg"
                             value={newProduct.brand}
-                            onChange={handleChange}
+                            onChange={(e) => {
+                                setNewProduct((prev) => ({
+                                    ...prev,
+                                    brand: e.target.value,
+                                }));
+                            }}
                         >
                             <option value="">Chọn hãng</option>
                             {allBrands.map((brand) => (
@@ -155,11 +181,17 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
                     <Form.Group className="mb-3">
                         <Form.Label>Danh mục</Form.Label>
                         <Form.Select
+                            className=" fs-4"
                             name="category"
                             aria-label="Default select example"
                             size="lg"
                             value={newProduct.category}
-                            onChange={handleChange}
+                            onChange={(e) => {
+                                setNewProduct((prev) => ({
+                                    ...prev,
+                                    category: e.target.value,
+                                }));
+                            }}
                         >
                             <option value="">Chọn danh mục</option>
                             {allCategories.map((category) => (
@@ -175,6 +207,7 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
                             Số lượng <p className="m-0 text-center text-danger">*</p>
                         </Form.Label>
                         <Form.Control
+                            className=" fs-4"
                             name="numberProduct"
                             type="number"
                             size="lg"
@@ -189,6 +222,7 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
                             Part Number <p className="m-0 text-center text-danger">*</p>
                         </Form.Label>
                         <Form.Control
+                            className=" fs-4"
                             name="partNumber"
                             type="text"
                             placeholder="Example: AA.AAAAA.000"
@@ -204,6 +238,7 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
                             Giá <p className="m-0 text-center text-danger">*</p>
                         </Form.Label>
                         <Form.Control
+                            className="fs-4"
                             name="price"
                             type="number"
                             placeholder="Example: 10"
@@ -216,10 +251,21 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
 
                     <Form.Group className="mb-3">
                         <Form.Label>Trạng thái</Form.Label>
-                        <Form.Select name="status" size="lg" value={newProduct.status} onChange={handleChange}>
+                        <Form.Select
+                            className=" fs-4"
+                            name="status"
+                            size="lg"
+                            value={newProduct.status}
+                            onChange={(e) => {
+                                setNewProduct((prev) => ({
+                                    ...prev,
+                                    status: e.target.value,
+                                }));
+                            }}
+                        >
                             <option value="">Chọn trạng thái</option>
-                            <option value="Còn hàng">Còn hàng</option>
-                            <option value="Hết hàng">Hết hàng</option>
+                            <option value="in-stock">Còn hàng</option>
+                            <option value="out-of-stock">Hết hàng</option>
                         </Form.Select>
                     </Form.Group>
 
@@ -227,7 +273,7 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
                         <Form.Label>Mô tả ngắn (Short Description)</Form.Label>
                         <Form.Control
                             name="shortDescription"
-                            className="mb-2"
+                            className="fs-4"
                             type="text"
                             as="textarea"
                             rows={3}
@@ -242,7 +288,7 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
                         <Form.Label>Mô tả chi tiết (Description)</Form.Label>
                         <Form.Control
                             name="description"
-                            className="mb-2"
+                            className="fs-4"
                             type="text"
                             as="textarea"
                             rows={3}
@@ -256,6 +302,7 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
                     <Form.Group className="mb-3">
                         <Form.Label>Short Overview</Form.Label>
                         <Form.Control
+                            className="fs-4"
                             name="shortOverview"
                             type="text"
                             as="textarea"
@@ -270,6 +317,7 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
                     <Form.Group className="mb-3">
                         <Form.Label>Overview</Form.Label>
                         <Form.Control
+                            className="fs-4"
                             name="overview"
                             type="text"
                             as="textarea"
@@ -288,7 +336,7 @@ function AddForm({ product, show = false, title, disabled, onHide, onSubmit }) {
                     Hủy
                 </Button>
                 <Button className="fs-4" type="submit" form="add-product-form" disabled={disabled}>
-                    Thêm
+                    {edit ? 'Cập nhật' : 'Thêm'}
                 </Button>
             </Modal.Footer>
         </Modal>

@@ -4,12 +4,38 @@ import { Button } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { NavLink } from 'react-router-dom';
+import AddForm from '~/components/AddForm';
+import * as httpRequest from '~/utils/httpRequest';
 
-function ProductItem({ product = {}, showOverView = true, separate = false, admin = false, onDeleteProduct }) {
+function ProductItem({
+    product = {},
+    showOverView = true,
+    separate = false,
+    admin = false,
+    onDeleteProduct,
+    onEditProduct,
+}) {
     const [showDeleteForm, setShowDeleteForm] = useState(false);
+    const [showEditForm, setShowEditForm] = useState(false);
 
     const handleCloseDeleteForm = () => setShowDeleteForm(false);
     const handleShowDeleteForm = () => setShowDeleteForm(true);
+
+    const handleEditProduct = async (formData, id) => {
+        try {
+            await httpRequest.put(`products/edit?id=${id}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            alert('Cập nhật thành công');
+            setShowEditForm(false);
+        } catch (err) {
+            console.error(err);
+            alert('Lỗi khi cập nhật sản phẩm');
+        }
+
+        await onEditProduct(formData, id);
+        setShowEditForm(false);
+    };
 
     return (
         <div>
@@ -56,7 +82,9 @@ function ProductItem({ product = {}, showOverView = true, separate = false, admi
                 <div className="add-to-cart px-5">
                     <div>
                         <h1 className="mb-4 fw-bold">{product.price + '₫'}</h1>
-                        <p className="m-0 pb-4 text-uppercase fs-4 fw-bold">{product.status}</p>
+                        <p className="m-0 pb-4 text-uppercase fs-4 fw-bold">
+                            {product.status === 'in-stock' ? 'Còn hàng' : 'Hết hàng'}
+                        </p>
                     </div>
                     {!admin && (
                         <div className="product-add-form mb-5">
@@ -82,7 +110,9 @@ function ProductItem({ product = {}, showOverView = true, separate = false, admi
 
                 {admin && (
                     <div className="update-btn d-flex flex-column justify-content-center gap-4">
-                        <Button className="fs-4">Sửa</Button>
+                        <Button className="fs-4" onClick={() => setShowEditForm(true)}>
+                            Sửa
+                        </Button>
                         <Button className="fs-4 btn-danger" onClick={handleShowDeleteForm}>
                             Xóa
                         </Button>
@@ -114,6 +144,14 @@ function ProductItem({ product = {}, showOverView = true, separate = false, admi
                     </div>
                 )}
             </div>
+            <AddForm
+                show={showEditForm}
+                title="Chỉnh sửa sản phẩm"
+                edit
+                productEdit={product}
+                onHide={() => setShowEditForm(false)}
+                onSubmit={handleEditProduct}
+            />
             {separate && <div className="separate-content w-100"></div>}
         </div>
     );

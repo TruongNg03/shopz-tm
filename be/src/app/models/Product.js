@@ -10,7 +10,7 @@ const Product = new Schema(
     title: { type: String, default: 'Default title' },
     nameProduct: { type: String, require: true, default: 'Name Product' },
     numberProduct: { type: Number, default: 0 },
-    typeProduct: { type: String, default: 'Default type product' },
+    category: { type: String, default: 'Default type product' },
     brand: { type: String, default: 'Default brand' },
     partNumber: { type: String, require: true, default: 'AA.AAAAA.000', unique: true },
     price: { type: String, default: '0' },

@@ -77,20 +77,26 @@ class ProductController {
   // edit product
   // [PUT] /products/edit?id
   editProduct(req, res, next) {
-    Product.findOne({ partNumber: req.body.partNumber })
+    Product.findOne({ _id: req.query.id })
       .then((findProduct) => {
-        if (findProduct) {
-          res.status(409).json({ message: 'Mã hàng đã tồn tại, hãy đổi sang mã hàng khác' });
+        if (!findProduct) {
+          res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
         } else {
-          Product.updateOne({ _id: req.query.id }, req.body)
-            .lean()
-            .then((result) => {
-              if (result.matchedCount === 0) {
-                return res.status(404).json({ message: 'Không tìm thấy sản phẩm để chỉnh sửa' });
-              }
+          if (req.file) {
+            req.body.img = `img/product/${req.file.filename}`;
+          }
 
+          Product.findByIdAndUpdate(req.query.id, req.body, {
+            new: true,
+            runValidators: true,
+          })
+            .lean()
+            .then((updatedProduct) => {
               console.log(`--Edited product with id: ${req.query.id}`);
-              res.status(200).json({ message: 'Đã chỉnh sửa sản phẩm' });
+              res.status(200).json({
+                message: 'Đã chỉnh sửa sản phẩm',
+                product: updatedProduct,
+              });
             })
             .catch(next);
         }
