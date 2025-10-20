@@ -82,7 +82,9 @@ function Cart() {
                                                 </div>
                                             </td>
                                             <td>
-                                                <span className="fs-3 fw-bold">{item.price + '₫'}</span>
+                                                <span className="fs-3 fw-bold">
+                                                    {Number(item.price).toLocaleString('en-US') + '₫'}
+                                                </span>
                                             </td>
                                             <td>
                                                 <Form.Select
@@ -97,7 +99,9 @@ function Cart() {
                                                 </Form.Select>
                                             </td>
                                             <td>
-                                                <span className="fs-3 fw-bold">{item.price * 2 + '₫'}</span>
+                                                <span className="fs-3 fw-bold">
+                                                    {Number(item.price * 2).toLocaleString('en-US') + '₫'}
+                                                </span>
                                             </td>
                                             <td>
                                                 <Button className="delete-btn text-black bg-transparent border-0">

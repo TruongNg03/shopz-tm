@@ -5,6 +5,8 @@ const Schema = mongoose.Schema;
 
 const Order = new Schema(
   {
+    email: { type: String, require: true },
+    username: { type: String, default: '' },
     img: { type: String, require: true, default: 'img' },
     nameProduct: { type: String, require: true, default: 'Name Product' },
     category: { type: String, default: 'Default type product' },
@@ -12,7 +14,8 @@ const Order = new Schema(
     partNumber: { type: String, require: true, default: 'AA.AAAAA.000' },
     price: { type: String, require: true, default: '0' },
     numberProduct: { type: Number, default: 1 },
-    status: { type: String, default: '' },
+    totalPrice: { type: String, require: true, default: '0' },
+    status: { type: String, default: 'processing' },
   },
   {
     timestamps: true,

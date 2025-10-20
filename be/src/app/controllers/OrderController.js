@@ -17,8 +17,8 @@ class OrderController {
         ...filter,
         $or: [
           { nameProduct: { $regex: search_input, $options: 'i' } },
-          //   { username: { $regex: search_input, $options: 'i' } },
-          //   { email: { $regex: search_input, $options: 'i' } },
+          { username: { $regex: search_input, $options: 'i' } },
+          { email: { $regex: search_input, $options: 'i' } },
         ],
       };
     }
@@ -36,6 +36,29 @@ class OrderController {
         }
       })
       .catch(next);
+  }
+
+  // create order
+  // [POST] /orders/create
+  createOrder(req, res, next) {
+    const createOrder = new Order(req.body);
+
+    createOrder
+      .save()
+      .then((savedOrder) => {
+        console.log('--Created a order');
+        res.status(201).json({
+          message: 'Đã thêm đơn hàng',
+          order: savedOrder,
+        });
+      })
+      .catch((err) => {
+        console.error('Error creating order:', err);
+        res.status(400).json({
+          message: 'Lỗi khi thêm đơn hàng',
+          error: err.message,
+        });
+      });
   }
 
   // update order

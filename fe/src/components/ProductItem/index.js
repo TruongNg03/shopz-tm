@@ -81,7 +81,7 @@ function ProductItem({
 
                 <div className="add-to-cart px-5">
                     <div>
-                        <h1 className="mb-4 fw-bold">{product.price + '₫'}</h1>
+                        <h1 className="mb-4 fw-bold">{Number(product.price).toLocaleString('en-US') + '₫'}</h1>
                         <p className="m-0 pb-4 text-uppercase fs-4 fw-bold">
                             {product.status === 'in-stock' ? 'Còn hàng' : 'Hết hàng'}
                         </p>

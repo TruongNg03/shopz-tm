@@ -65,6 +65,8 @@ function AdminOrders() {
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th>Email</th>
+                            <th>Username</th>
                             <th>Sản phẩm</th>
                             <th>Mã sản phẩm</th>
                             <th>Giá</th>
@@ -76,10 +78,12 @@ function AdminOrders() {
                     </thead>
                     <tbody>
                         {allOrders.length > 0 ? (
-                            allOrders.map((order, key) => {
+                            allOrders.map((order, idx) => {
                                 return (
-                                    <tr key={++key}>
-                                        <td>{++key}</td>
+                                    <tr key={order._id}>
+                                        <td>{++idx}</td>
+                                        <td>{order.email}</td>
+                                        <td>{order.username}</td>
                                         <td>
                                             <div className="d-flex align-items-center gap-4">
                                                 <img
@@ -91,9 +95,9 @@ function AdminOrders() {
                                             </div>
                                         </td>
                                         <td>{order.partNumber}</td>
-                                        <td>{order.price}₫</td>
+                                        <td>{Number(order.price).toLocaleString('en-US')}₫</td>
                                         <td>{order.numberProduct}</td>
-                                        <td>{order.price * order.numberProduct}₫</td>
+                                        <td>{Number(order.totalPrice).toLocaleString('en-US')}₫</td>
                                         <td className="fst-italic">{order.status}</td>
                                         <td>
                                             <Button className="fs-4 text-primary text-decoration-underline bg-transparent border-0">
@@ -105,7 +109,7 @@ function AdminOrders() {
                             })
                         ) : (
                             <tr>
-                                <td className="text-center" colSpan={8}>
+                                <td className="text-center" colSpan={10}>
                                     {errorMessage || 'Chưa có đơn hàng'}
                                 </td>
                             </tr>

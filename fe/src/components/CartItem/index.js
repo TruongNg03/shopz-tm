@@ -55,7 +55,9 @@ function CartItem({
                 )}
                 {showCart && (
                     <span className={cx('d-flex align-items-center justify-content-between user-select-none')}>
-                        <p className={cx('price-product m-0 fs-2 fw-bold')}>{product.price + '₫'}</p>
+                        <p className={cx('price-product m-0 fs-2 fw-bold')}>
+                            {Number(product.price).toLocaleString('en-US') + '₫'}
+                        </p>
                         <Button href="/cart" className={cx('add rounded-circle bg-transparent border-0 fs-2')}>
                             <FontAwesomeIcon icon={faCartPlus} />
                         </Button>
@@ -66,7 +68,9 @@ function CartItem({
             {showItemSpecification && (
                 <div className="item-specification p-3">
                     <div className="content-specification">
-                        <p className="fs-2 fw-bold text-uppercase mb-2">{product.price + '₫'}</p>
+                        <p className="fs-2 fw-bold text-uppercase mb-2">
+                            {Number(product.price).toLocaleString('en-US') + '₫'}
+                        </p>
                         <p className="fs-5 fw-bold text-uppercase">
                             {product.status === 'in-stock' ? 'Còn hàng' : 'Hết hàng'}
                         </p>
