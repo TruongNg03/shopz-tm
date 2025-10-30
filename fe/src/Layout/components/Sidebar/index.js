@@ -1,6 +1,6 @@
 import './Sidebar.scss';
 import { useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 import {
     faArrowRightFromBracket,
@@ -50,7 +50,7 @@ function Sidebar() {
 
             <Modal show={showLogoutForm} onHide={handleCloseLogoutForm} keyboard={false}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Đăng xuất</Modal.Title>
+                    <Modal.Title className="fs-3 fw-bold">Đăng xuất</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>Bạn có muốn đăng xuất không?</Modal.Body>
                 <Modal.Footer>
@@ -58,7 +58,7 @@ function Sidebar() {
                         Hủy
                     </Button>
                     <Button className="fs-4" variant="primary" onClick={handleLogout}>
-                        Có
+                        Đăng xuất
                     </Button>
                 </Modal.Footer>
             </Modal>

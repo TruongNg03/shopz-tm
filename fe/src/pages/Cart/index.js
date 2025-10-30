@@ -1,142 +1,212 @@
+import { useState, useEffect, useContext } from 'react';
+import { NavLink } from 'react-router-dom';
 import { Table, Form, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import './Cart.scss';
-import images from '~/assets/images';
-
-//example data
-const CART_ITEMS = [
-    {
-        linkImg: images.introduction1,
-        title: 'Title',
-        text: 'Text',
-        linkTo: '/#',
-        price: '10',
-        status: 'Có hàng',
-        nameProduct: 'AN-515',
-        contentProduct: ['line 1', 'line 2'],
-    },
-    {
-        linkImg: images.introduction2,
-        title: 'Title',
-        text: 'Text',
-        linkTo: '/#',
-        price: '10',
-        status: 'Có hàng',
-        nameProduct: 'AN-515',
-        contentProduct: ['line 1', 'line 2'],
-    },
-];
+import { AuthContext } from '~/context/AuthContext';
+import * as httpRequest from '~/utils/httpRequest';
 
 function Cart() {
+    const { user } = useContext(AuthContext);
+
+    const [allOrders, setAllOrders] = useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [summary, setSummary] = useState(0);
+
+    useEffect(() => {
+        async function getData() {
+            if (user) {
+                const dataOrders = await httpRequest.get(`orders?email=${user.email}`);
+
+                console.log('my orders:', dataOrders);
+                console.log('--------------------');
+
+                if (dataOrders.message) {
+                    setErrorMessage(dataOrders.message);
+                    setAllOrders([]);
+                } else {
+                    setAllOrders(dataOrders.orders);
+                    setErrorMessage('');
+                }
+            } else {
+                setErrorMessage('Đăng nhập để sử dụng chức năng này');
+            }
+        }
+
+        getData();
+    }, [user]);
+
+    useEffect(() => {
+        const total = allOrders.reduce((sum, item) => sum + item.price * item.numberProduct, 0);
+        setSummary(total);
+    }, [allOrders]);
+
+    const handleChangeNumberProduct = async (e, idx) => {
+        const updatedOrders = [...allOrders];
+        updatedOrders[idx].numberProduct = e.target.value;
+
+        const res = await httpRequest.patch(`orders/update?id=${e.target.id}`, { numberProduct: e.target.value });
+        console.log('update order:', res.data.order);
+
+        if (res.data.order) {
+            setAllOrders(updatedOrders);
+        } else {
+            alert(res.message);
+        }
+    };
+
+    const handleDeleteOrder = async (idx, id) => {
+        const updatedOrders = allOrders.filter((_, i) => i !== idx);
+
+        // api
+        const res = await httpRequest.remove(`orders/delete-permanent?id=${id}`);
+        console.log(res);
+
+        if (res.status === 200) {
+            console.log('delete order:', id);
+            setAllOrders(updatedOrders);
+        } else {
+            alert(res.message);
+        }
+    };
+
+    const handleDeleteAllOrders = async () => {
+        console.log('click delete all order');
+    };
+
     return (
         <div className="cart container">
-            {/* <span className="fs-3">
-                Vui lòng{' '}
-                <a href="/sign-in" className="m-0 text-decoration-underline text-primary">
-                    đăng nhập
-                </a>{' '}
-                để xem danh sách yêu thích
-            </span> */}
-
-            {/* <div className="m-5">
-                <span className="fs-3 text-center">
-                    <p className="m-0">Danh sách giỏ hàng trống</p>
-                    <p className="m-0">
-                        <a href="/">Đi mua sắm</a>
-                    </p>
+            {!user && (
+                <span className="fs-3">
+                    Vui lòng{' '}
+                    <NavLink to="/sign-in" className="m-0 text-decoration-underline text-primary">
+                        đăng nhập
+                    </NavLink>{' '}
+                    để dùng chức năng này
                 </span>
-            </div> */}
+            )}
 
-            <div className="wrapper-cart pt-5 px-3">
-                <div className="title-cart my-3">
-                    <h1 className="fw-bold">Giỏ hàng</h1>
-                </div>
-
-                <div className="list-summary">
-                    <div className="list-carts flex-grow-1 p-3 rounded-2">
-                        <Table className="bg-transparent m-0" striped hover>
-                            <thead>
-                                <tr>
-                                    <th style={{ textAlign: 'left' }}>Sản phẩm của bạn</th>
-                                    <th>Giá</th>
-                                    <th>Số lượng</th>
-                                    <th>Tổng cộng</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {CART_ITEMS.map((item, key = 0) => {
-                                    return (
-                                        <tr key={key++}>
-                                            <td>
-                                                <div className="cart-item d-flex align-items-center">
-                                                    <img
-                                                        className="item-img me-4 rounded-3"
-                                                        src={item.linkImg}
-                                                        alt={item.nameProduct}
-                                                    />
-                                                    <div className="info-item">
-                                                        <p className="m-0 fs-4">{item.nameProduct}</p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <span className="fs-3 fw-bold">
-                                                    {Number(item.price).toLocaleString('en-US') + '₫'}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <Form.Select
-                                                    className="select-amount"
-                                                    size="lg"
-                                                    aria-label="Default select example"
-                                                    defaultValue={1}
-                                                >
-                                                    <option value="1">1</option>
-                                                    <option value="2">2</option>
-                                                    <option value="3">3</option>
-                                                </Form.Select>
-                                            </td>
-                                            <td>
-                                                <span className="fs-3 fw-bold">
-                                                    {Number(item.price * 2).toLocaleString('en-US') + '₫'}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <Button className="delete-btn text-black bg-transparent border-0">
-                                                    <FontAwesomeIcon icon={faTrash} />
-                                                </Button>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </Table>
+            {user && (
+                <div className="wrapper-cart pt-5 px-3">
+                    <div className="title-cart my-3">
+                        <h1 className="fw-bold fs-2">Giỏ hàng</h1>
                     </div>
 
-                    <div className="cart-summary h-100 p-3 rounded-3">
-                        <p className="fs-3 fw-bold">Tổng cộng giỏ hàng</p>
-                        <div className="separate"></div>
-                        <div>
-                            <Table className="table-borderless">
-                                <tbody>
-                                    <tr>
-                                        <td className="px-0 fs-4">Tổng cộng</td>
-                                        <td className="px-0 fs-4 text-end">{20 + '₫'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="px-0 py-3 fs-3 fw-bold">Tổng</td>
-                                        <td className="px-0 py-3 fs-3 fw-bold text-end">{20 + '₫'}</td>
-                                    </tr>
-                                </tbody>
-                            </Table>
+                    {allOrders.length === 0 && (
+                        <div className="m-5">
+                            <span className="fs-3 text-center">
+                                <p className="m-0">Danh sách giỏ hàng trống</p>
+                                <p className="m-0">
+                                    <NavLink to="/">Đi mua sắm</NavLink>
+                                </p>
+                            </span>
                         </div>
+                    )}
 
-                        <Button className="w-100 my-4 p-2 fs-4 fw-bold rounded-5">Thanh toán</Button>
-                    </div>
+                    {allOrders.length > 0 && (
+                        <div className="list-summary">
+                            <div className="list-carts flex-grow-1 p-3 rounded-2">
+                                <Table className="bg-transparent m-0" striped hover>
+                                    <thead>
+                                        <tr>
+                                            <th style={{ textAlign: 'left' }}>Sản phẩm của bạn</th>
+                                            <th>Giá</th>
+                                            <th>Số lượng</th>
+                                            <th>Tổng cộng</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {allOrders.map((item, idx) => {
+                                            return (
+                                                <tr key={idx}>
+                                                    <td>
+                                                        <div className="cart-item d-flex align-items-center">
+                                                            <img
+                                                                className="item-img me-4 rounded-3"
+                                                                src={item.linkImg}
+                                                                alt={item.nameProduct}
+                                                            />
+                                                            <div className="info-item d-flex flex-column text-start">
+                                                                <p className="m-0 fs-4 fw-bold">{item.nameProduct}</p>
+                                                                <p className="m-0 fs-5">
+                                                                    Part Number: {item.partNumber}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span className="fs-3 fw-bold">
+                                                            {Number(item.price).toLocaleString('en-US') + '₫'}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <Form.Select
+                                                            id={item._id}
+                                                            className="select-amount"
+                                                            size="lg"
+                                                            aria-label="Default select example"
+                                                            defaultValue={item.numberProduct}
+                                                            onChange={(e) => handleChangeNumberProduct(e, idx)}
+                                                        >
+                                                            {Array.from({ length: 10 }, (_, i) => (
+                                                                <option key={i + 1} value={i + 1}>
+                                                                    {i + 1}
+                                                                </option>
+                                                            ))}
+                                                        </Form.Select>
+                                                    </td>
+                                                    <td>
+                                                        <span className="fs-3 fw-bold">
+                                                            {Number(item.price * item.numberProduct).toLocaleString(
+                                                                'en-US',
+                                                            ) + '₫'}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <Button
+                                                            className="delete-btn text-black bg-transparent border-0"
+                                                            onClick={() => handleDeleteOrder(idx, item._id)}
+                                                        >
+                                                            <FontAwesomeIcon icon={faTrash} />
+                                                        </Button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </Table>
+                            </div>
+
+                            <div className="cart-summary h-100 p-3 rounded-3">
+                                <p className="fs-3 fw-bold">Tổng cộng giỏ hàng</p>
+                                <div className="separate"></div>
+                                <div>
+                                    <Table className="table-borderless">
+                                        <tbody>
+                                            <tr>
+                                                <td className="px-0 fs-4">Tổng cộng</td>
+                                                <td className="px-0 fs-4 text-end">
+                                                    {Number(summary).toLocaleString('en-US') + '₫'}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td className="px-0 py-3 fs-3 fw-bold">Tổng</td>
+                                                <td className="px-0 py-3 fs-3 fw-bold text-end">
+                                                    {Number(summary).toLocaleString('en-US') + '₫'}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </Table>
+                                </div>
+
+                                <Button className="w-100 my-4 p-2 fs-4 fw-bold rounded-5">Thanh toán</Button>
+                            </div>
+                        </div>
+                    )}
                 </div>
-            </div>
+            )}
         </div>
     );
 }

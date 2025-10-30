@@ -1,35 +1,8 @@
 import { Button, Table } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 import './AdminOrders.scss';
-import images from '~/assets/images';
 import useDebounce from '~/hooks/useDebounce';
 import * as httpRequest from '~/utils/httpRequest';
-
-//example data
-const ORDER_ITEMS = [
-    {
-        idOrder: 'FDS22',
-        linkImg: images.introduction1,
-        title: 'Title',
-        text: 'Text',
-        linkTo: '/#',
-        price: '10',
-        numProduct: 1,
-        nameProduct: 'AN-515',
-        statusOrder: 'processing',
-    },
-    {
-        idOrder: 'FAS89',
-        linkImg: images.introduction2,
-        title: 'Title',
-        text: 'Text',
-        linkTo: '/#',
-        price: '10',
-        numProduct: 2,
-        nameProduct: 'AN-515',
-        statusOrder: 'processing',
-    },
-];
 
 function AdminOrders() {
     const [searchOrder, setSearchOrder] = useState('');

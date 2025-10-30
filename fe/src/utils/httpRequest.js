@@ -51,7 +51,7 @@ export const post = async (path, data) => {
                 status: error.response.status,
             };
         } else {
-            console.error('GET request failed:', error.message);
+            console.error('POST request failed:', error.message);
             return { error: true, message: 'Lỗi kết nối tới server' };
         }
     }
@@ -69,7 +69,7 @@ export const put = async (path, data) => {
                 status: error.response.status,
             };
         } else {
-            console.error('GET request failed:', error.message);
+            console.error('PUT request failed:', error.message);
             return { error: true, message: 'Lỗi kết nối tới server' };
         }
     }
@@ -87,15 +87,15 @@ export const patch = async (path, data) => {
                 status: error.response.status,
             };
         } else {
-            console.error('GET request failed:', error.message);
+            console.error('PATCH request failed:', error.message);
             return { error: true, message: 'Lỗi kết nối tới server' };
         }
     }
 };
 
-export const remove = async (path, data) => {
+export const remove = async (path) => {
     try {
-        const res = await httpRequest.delete(path, data);
+        const res = await httpRequest.delete(path);
         return res;
     } catch (error) {
         if (error.response) {
@@ -105,7 +105,7 @@ export const remove = async (path, data) => {
                 status: error.response.status,
             };
         } else {
-            console.error('GET request failed:', error.message);
+            console.error('DELETE request failed:', error.message);
             return { error: true, message: 'Lỗi kết nối tới server' };
         }
     }

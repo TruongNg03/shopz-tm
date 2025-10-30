@@ -14,7 +14,6 @@ const Order = new Schema(
     partNumber: { type: String, require: true, default: 'AA.AAAAA.000' },
     price: { type: String, require: true, default: '0' },
     numberProduct: { type: Number, default: 1 },
-    totalPrice: { type: String, require: true, default: '0' },
     status: { type: String, default: 'processing' },
   },
   {

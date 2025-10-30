@@ -64,11 +64,13 @@ class OrderController {
   // update order
   // [PATCH] /orders/update?id=...
   updateOrder(req, res, next) {
-    Order.updateOne({ _id: req.query.id }, req.body)
-      .lean()
-      .then(() => {
+    Order.findByIdAndUpdate(req.query.id, req.body, { new: true })
+      .then((updatedOrder) => {
+        if (!updatedOrder) {
+          return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+        }
         console.log(`--Updated order with id: ${req.query.id}`);
-        res.status(200).json({ message: 'Đã cập nhật đơn hàng' });
+        res.status(200).json({ message: 'Đã cập nhật đơn hàng', order: updatedOrder });
       })
       .catch(next);
   }
@@ -76,12 +78,25 @@ class OrderController {
   // delete permanent order
   // [DELETE] /Order/delete-permanent?id=...
   deletePermanentOrder(req, res, next) {
+    if (!req.query.id) {
+      return res.status(400).json({ message: 'Thiếu ID đơn hàng' });
+    }
+
     Order.deleteOne({ _id: req.query.id })
-      .then(() => {
+      .then((result) => {
+        console.log(result);
+
+        if (result.deletedCount === 0) {
+          return res.status(404).json({ message: 'Không tìm thấy đơn hàng để xóa' });
+        }
+
         console.log(`--Deleted permanent order with id: ${req.query.id}`);
         res.status(200).json({ message: 'Đã xóa đơn hàng này' });
       })
-      .catch(next);
+      .catch((error) => {
+        console.error('Lỗi khi xóa đơn hàng:', error);
+        next(error);
+      });
   }
 }
 

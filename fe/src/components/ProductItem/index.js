@@ -1,11 +1,12 @@
 import './ProductItem.scss';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Button } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { NavLink } from 'react-router-dom';
 import AddForm from '~/components/AddForm';
 import * as httpRequest from '~/utils/httpRequest';
+import { AuthContext } from '~/context/AuthContext';
 
 function ProductItem({
     product = {},
@@ -15,11 +16,39 @@ function ProductItem({
     onDeleteProduct,
     onEditProduct,
 }) {
+    const { user } = useContext(AuthContext);
+
     const [showDeleteForm, setShowDeleteForm] = useState(false);
     const [showEditForm, setShowEditForm] = useState(false);
+    const [numberProduct, setNumberProduct] = useState(1);
+
+    const handleCreateOrder = async () => {
+        if (user) {
+            const newOrder = {
+                email: user.email,
+                username: user.username,
+                img: product.img,
+                nameProduct: product.nameProduct,
+                category: product.category,
+                branch: product.branch,
+                partNumber: product.partNumber,
+                price: product.price,
+                numberProduct: numberProduct,
+            };
+
+            const res = await httpRequest.post('orders/create', newOrder);
+            if (res.status === 201) {
+                console.log('create order:', newOrder);
+                alert(res.data.message);
+            } else {
+                alert(res.message || 'Không thể tạo đơn hàng');
+            }
+        } else {
+            alert('Đăng nhập để sử dụng chức năng này');
+        }
+    };
 
     const handleCloseDeleteForm = () => setShowDeleteForm(false);
-    const handleShowDeleteForm = () => setShowDeleteForm(true);
 
     const handleEditProduct = async (formData, id) => {
         try {
@@ -95,13 +124,21 @@ function ProductItem({
                                     size="lg"
                                     aria-label="Default select example"
                                     defaultValue={1}
+                                    onChange={(e) => {
+                                        setNumberProduct(e.target.value);
+                                    }}
                                 >
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
+                                    {Array.from({ length: 10 }, (_, i) => (
+                                        <option key={i + 1} value={i + 1}>
+                                            {i + 1}
+                                        </option>
+                                    ))}
                                 </Form.Select>
                             </div>
-                            <Button className="add-to-cart-btn w-100 p-2 fs-4 fw-bold rounded-5">
+                            <Button
+                                className="add-to-cart-btn w-100 p-2 fs-4 fw-bold rounded-5"
+                                onClick={handleCreateOrder}
+                            >
                                 Thêm vào giỏ hàng
                             </Button>
                         </div>
@@ -113,7 +150,7 @@ function ProductItem({
                         <Button className="fs-4" onClick={() => setShowEditForm(true)}>
                             Sửa
                         </Button>
-                        <Button className="fs-4 btn-danger" onClick={handleShowDeleteForm}>
+                        <Button className="fs-4 btn-danger" onClick={() => setShowDeleteForm(true)}>
                             Xóa
                         </Button>
 

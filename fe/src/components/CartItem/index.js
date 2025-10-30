@@ -1,9 +1,12 @@
 import classNames from 'classnames/bind';
 import styles from './CartItem.scss';
+import { useState, useContext } from 'react';
 import { Card, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
 import { NavLink } from 'react-router-dom';
+import { AuthContext } from '~/context/AuthContext';
+import * as httpRequest from '~/utils/httpRequest';
 
 const cx = classNames.bind(styles);
 
@@ -18,7 +21,34 @@ function CartItem({
     addProduct,
     showItemSpecification,
 }) {
+    const { user } = useContext(AuthContext);
+
     const classes = cx('card', { addProduct, showItemSpecification });
+
+    const handleCreateOrder = async () => {
+        if (user) {
+            const newOrder = {
+                email: user.email,
+                username: user.username,
+                img: product.img,
+                nameProduct: product.nameProduct,
+                category: product.category,
+                branch: product.branch,
+                partNumber: product.partNumber,
+                price: product.price,
+            };
+
+            const res = await httpRequest.post('orders/create', newOrder);
+            if (res.status === 201) {
+                console.log('create order:', newOrder);
+                alert(res.data.message);
+            } else {
+                alert(res.message || 'Không thể tạo đơn hàng');
+            }
+        } else {
+            alert('Đăng nhập để sử dụng chức năng này');
+        }
+    };
 
     return (
         <Card className={cx(classes, 'border-0 rounded-4 d-flex flex-column m-2')}>
@@ -88,7 +118,12 @@ function CartItem({
                         >
                             Xem chi tiết
                         </NavLink>
-                        <Button className="add-to-cart-btn p-2 fs-4 fw-bold rounded-5">Thêm vào giỏ hàng</Button>
+                        <Button
+                            className="add-to-cart-btn p-2 fs-4 fw-bold rounded-5"
+                            onClick={() => handleCreateOrder()}
+                        >
+                            Thêm vào giỏ hàng
+                        </Button>
                     </div>
                 </div>
             )}

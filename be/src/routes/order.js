@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const { verifyToken } = require('../app/middlewares/verifyToken');
 
 const orderController = require('../app/controllers/OrderController');
 
 router.get('', orderController.getOrders);
-router.post('/create', orderController.createOrder);
-router.patch('/update', orderController.updateOrder);
-router.delete('/delete-permanent', orderController.deletePermanentOrder);
+router.post('/create', verifyToken, orderController.createOrder);
+router.patch('/update', verifyToken, orderController.updateOrder);
+router.delete('/delete-permanent', verifyToken, orderController.deletePermanentOrder);
 
 module.exports = router;
