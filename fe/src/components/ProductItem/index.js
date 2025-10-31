@@ -37,11 +37,11 @@ function ProductItem({
             };
 
             const res = await httpRequest.post('orders/create', newOrder);
-            if (res.status === 201) {
+            if (res.status === 201 || res.status === 200) {
                 console.log('create order:', newOrder);
                 alert(res.data.message);
             } else {
-                alert(res.message || 'Không thể tạo đơn hàng');
+                alert(res.message || 'Lỗi tạo đơn hàng');
             }
         } else {
             alert('Đăng nhập để sử dụng chức năng này');
@@ -91,15 +91,7 @@ function ProductItem({
                     </NavLink>
                     <div className="separate-content w-100"></div>
                     <div className="product-info my-4">
-                        {product.overview && showOverView && (
-                            <p className="m-0">
-                                Vũ Khí Gaming AI Tối Thượng 2024 phiên bản màn hình 16" - PTN16-51. Laptop Gaming AI
-                                tiên phong với CPU Intel® Core™ Ultra 7 mới nhất (với nhân NPU chuyên dụng cho các tác
-                                vụ AI). Mỏng nhẹ, tinh tế với chất liệu nhôm (20.8mm - 2.05kg), mạnh mẽ với GPU NVIDIA®
-                                GeForce™ RTX 40 Series, màn hình 16" 2K+ IPS 240Hz siêu tốc, mát nhất phân khúc với 2
-                                quạt (1 quạt AeroBlade™ 3D thế hệ 5), ống đồng dạng Vector và tản nhiệt Kim Loại Lỏng.
-                            </p>
-                        )}
+                        {product.overview && showOverView && <p className="m-0">{product.shortDescription || ''}</p>}
                         <ul className="fs-4 py-3">
                             {product.shortDescription.map((info, key) => (
                                 <li key={key++}>{info}</li>

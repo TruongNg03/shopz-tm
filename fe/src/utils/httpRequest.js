@@ -93,9 +93,9 @@ export const patch = async (path, data) => {
     }
 };
 
-export const remove = async (path) => {
+export const remove = async (path, data) => {
     try {
-        const res = await httpRequest.delete(path);
+        const res = await httpRequest.delete(path, { data: data });
         return res;
     } catch (error) {
         if (error.response) {

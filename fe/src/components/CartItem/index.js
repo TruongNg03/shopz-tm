@@ -39,11 +39,11 @@ function CartItem({
             };
 
             const res = await httpRequest.post('orders/create', newOrder);
-            if (res.status === 201) {
+            if (res.status === 201 || res.status === 200) {
                 console.log('create order:', newOrder);
                 alert(res.data.message);
             } else {
-                alert(res.message || 'Không thể tạo đơn hàng');
+                alert(res.message || 'Lỗi tạo đơn hàng');
             }
         } else {
             alert('Đăng nhập để sử dụng chức năng này');

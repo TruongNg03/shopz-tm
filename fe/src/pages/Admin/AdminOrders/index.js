@@ -61,7 +61,7 @@ function AdminOrders() {
                                             <div className="d-flex align-items-center gap-4">
                                                 <img
                                                     className="admin-order-img"
-                                                    src={order.linkImg}
+                                                    src={`${process.env.REACT_APP_BASE_API_URL}${order.img}`}
                                                     alt="product-img"
                                                 />
                                                 {order.nameProduct}

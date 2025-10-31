@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Table, Form, Button } from 'react-bootstrap';
+import { Table, Form, Button, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import './Cart.scss';
 import { AuthContext } from '~/context/AuthContext';
 import * as httpRequest from '~/utils/httpRequest';
+import config from '~/config';
 
 function Cart() {
     const { user } = useContext(AuthContext);
@@ -13,6 +14,7 @@ function Cart() {
     const [allOrders, setAllOrders] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [summary, setSummary] = useState(0);
+    const [showDeleteForm, setShowDeleteForm] = useState(false);
 
     useEffect(() => {
         async function getData() {
@@ -59,7 +61,6 @@ function Cart() {
     const handleDeleteOrder = async (idx, id) => {
         const updatedOrders = allOrders.filter((_, i) => i !== idx);
 
-        // api
         const res = await httpRequest.remove(`orders/delete-permanent?id=${id}`);
         console.log(res);
 
@@ -72,7 +73,18 @@ function Cart() {
     };
 
     const handleDeleteAllOrders = async () => {
-        console.log('click delete all order');
+        const allOrderIds = allOrders.map((order) => order._id);
+        console.log('all order ids:', allOrderIds);
+
+        const res = await httpRequest.remove('orders/delete-permanent-orders', { ids: allOrderIds });
+        console.log(res);
+
+        if (res.status === 200) {
+            console.log('delete all orders');
+            setAllOrders([]);
+        } else {
+            alert(res.message);
+        }
     };
 
     return (
@@ -106,7 +118,7 @@ function Cart() {
 
                     {allOrders.length > 0 && (
                         <div className="list-summary">
-                            <div className="list-carts flex-grow-1 p-3 rounded-2">
+                            <div className="list-carts h-100 flex-grow-1 p-3 rounded-2">
                                 <Table className="bg-transparent m-0" striped hover>
                                     <thead>
                                         <tr>
@@ -125,7 +137,7 @@ function Cart() {
                                                         <div className="cart-item d-flex align-items-center">
                                                             <img
                                                                 className="item-img me-4 rounded-3"
-                                                                src={item.linkImg}
+                                                                src={`${process.env.REACT_APP_BASE_API_URL}${item.img}`}
                                                                 alt={item.nameProduct}
                                                             />
                                                             <div className="info-item d-flex flex-column text-start">
@@ -177,6 +189,46 @@ function Cart() {
                                         })}
                                     </tbody>
                                 </Table>
+
+                                <div className="d-flex justify-content-between pt-4 px-3">
+                                    <NavLink
+                                        to={config.routes.home}
+                                        className="m-0 fs-4 fw-bold text-black text-decoration-underline"
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        Tiếp tục mua sắm
+                                    </NavLink>
+                                    <p
+                                        className="m-0 fs-4 fw-bold text-decoration-underline"
+                                        style={{ cursor: 'pointer' }}
+                                        onClick={() => setShowDeleteForm(true)}
+                                    >
+                                        Xóa tất cả
+                                    </p>
+                                </div>
+
+                                <Modal show={showDeleteForm} onHide={() => setShowDeleteForm(false)} keyboard={false}>
+                                    <Modal.Header closeButton>
+                                        <Modal.Title>Xóa đơn hàng</Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body>Bạn muốn xóa tất cả đơn hàng?</Modal.Body>
+                                    <Modal.Footer>
+                                        <Button
+                                            className="fs-4"
+                                            variant="secondary"
+                                            onClick={() => setShowDeleteForm(false)}
+                                        >
+                                            Hủy
+                                        </Button>
+                                        <Button
+                                            className="fs-4"
+                                            variant="danger"
+                                            onClick={() => handleDeleteAllOrders()}
+                                        >
+                                            Xóa
+                                        </Button>
+                                    </Modal.Footer>
+                                </Modal>
                             </div>
 
                             <div className="cart-summary h-100 p-3 rounded-3">
