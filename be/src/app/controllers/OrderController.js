@@ -4,12 +4,13 @@ class OrderController {
   // get all orders
   // [GET] /orders?search_input=...
   getOrders(req, res, next) {
-    const { nameProduct, email, username, search_input } = req.query;
+    const { nameProduct, email, username, partNumber, search_input } = req.query;
 
     let filter = {
       ...(nameProduct && { nameProduct: { $regex: nameProduct, $options: 'i' } }),
       ...(email && { email: { $regex: email, $options: 'i' } }),
       ...(username && { username: { $regex: username, $options: 'i' } }),
+      ...(partNumber && { partNumber: { $regex: partNumber, $options: 'i' } }),
     };
 
     if (search_input) {
@@ -17,6 +18,7 @@ class OrderController {
         ...filter,
         $or: [
           { nameProduct: { $regex: search_input, $options: 'i' } },
+          { partNumber: { $regex: search_input, $options: 'i' } },
           { username: { $regex: search_input, $options: 'i' } },
           { email: { $regex: search_input, $options: 'i' } },
         ],
@@ -24,7 +26,7 @@ class OrderController {
     }
 
     // log query
-    console.log('--Find feedback query:', filter);
+    console.log('--Find order query:', filter);
 
     Order.find(filter)
       .lean()
