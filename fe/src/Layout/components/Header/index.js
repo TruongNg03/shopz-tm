@@ -8,7 +8,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Offcanvas from 'react-bootstrap/Offcanvas';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 import Tippy from '@tippyjs/react/headless';
 import { Wrapper as TooltipWrapper } from '~/components/Tooltip';
@@ -110,13 +110,13 @@ function Header() {
     // cart, notify, user button
     const CNUButton = forwardRef((props, ref) => {
         return (
-            <Button
+            <NavLink
                 ref={ref}
-                href={props.href}
-                className="bg-transparent border-0 text-secondary fs-2 rounded-circle hover-btn"
+                to={props.href}
+                className=" d-flex align-items-center justify-content-center bg-transparent border-0 text-secondary fs-2 rounded-circle hover-btn"
             >
                 <FontAwesomeIcon icon={props.icon} />
-            </Button>
+            </NavLink>
         );
     });
 
@@ -124,7 +124,9 @@ function Header() {
         <div className="header position-fixed fixed-top w-100 bg-white z-3 user-select-none">
             <Navbar expand={sizeExpandNavbar} className="content-header shadow-sm navbar navbar-expand-md navbar-light">
                 <Container fluid>
-                    <Navbar.Brand href="/">Shopz-TM</Navbar.Brand>
+                    <NavLink className="text-decoration-none text-black" to="/">
+                        Shopz-TM
+                    </NavLink>
                     <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${sizeExpandNavbar}`} />
                     <Navbar.Offcanvas
                         id={`offcanvasNavbar-expand-${sizeExpandNavbar}`}

@@ -76,7 +76,7 @@ function Cart() {
         const allOrderIds = allOrders.map((order) => order._id);
         console.log('all order ids:', allOrderIds);
 
-        const res = await httpRequest.remove('orders/delete-permanent-orders', { ids: allOrderIds });
+        const res = await httpRequest.remove('orders/delete-permanent-orders', { ids: allOrderIds, email: user.email });
         console.log(res);
 
         if (res.status === 200) {
@@ -88,9 +88,9 @@ function Cart() {
     };
 
     return (
-        <div className="cart container">
+        <div className="cart container d-flex justify-content-center">
             {!user && (
-                <span className="fs-3">
+                <span className="fs-3 mt-4">
                     Vui lòng{' '}
                     <NavLink to="/sign-in" className="m-0 text-decoration-underline text-primary">
                         đăng nhập
@@ -100,7 +100,7 @@ function Cart() {
             )}
 
             {user && (
-                <div className="wrapper-cart pt-5 px-3">
+                <div className="wrapper-cart flex-grow-1 pt-5 px-3">
                     <div className="title-cart my-3">
                         <h1 className="fw-bold fs-2">Giỏ hàng</h1>
                     </div>

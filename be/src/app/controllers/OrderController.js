@@ -1,4 +1,5 @@
 const Order = require('../models/Order');
+const User = require('../models/User');
 
 class OrderController {
   // get all orders
@@ -42,55 +43,37 @@ class OrderController {
 
   // create order
   // [POST] /orders/create
-  createOrder(req, res, next) {
-    const createOrder = new Order(req.body);
+  async createOrder(req, res, next) {
+    try {
+      const createOrder = new Order(req.body);
 
-    Order.findOne({ email: createOrder.email, partNumber: createOrder.partNumber })
-      .then((order) => {
-        if (order) {
-          const newNumberProduct = order.numberProduct + 1;
-
-          Order.findByIdAndUpdate(
-            order._id,
-            { numberProduct: newNumberProduct > 10 ? 10 : newNumberProduct },
-            {
-              new: true,
-              runValidators: true,
-            },
-          )
-            .lean()
-            .then(() => {
-              res.status(200).json({
-                message: 'Đã thêm sản phẩm vào đơn hàng',
-              });
-            })
-            .catch(next);
-        } else {
-          createOrder
-            .save()
-            .then((savedOrder) => {
-              console.log('--Created a order');
-              res.status(201).json({
-                message: 'Đã thêm đơn hàng',
-                order: savedOrder,
-              });
-            })
-            .catch((err) => {
-              console.error('Error creating order:', err);
-              res.status(400).json({
-                message: 'Lỗi khi thêm đơn hàng',
-                error: err.message,
-              });
-            });
-        }
-      })
-      .catch((err) => {
-        console.error('Error finding order:', err);
-        res.status(500).json({
-          message: 'Lỗi khi tìm đơn hàng',
-          error: err.message,
-        });
+      const existingOrder = await Order.findOne({
+        email: createOrder.email,
+        partNumber: createOrder.partNumber,
       });
+
+      if (existingOrder) {
+        const newNumberProduct = Math.min(existingOrder.numberProduct + 1, 10);
+        await Order.findByIdAndUpdate(existingOrder._id, {
+          numberProduct: newNumberProduct,
+        });
+
+        return res.status(200).json({ message: 'Đã thêm sản phẩm vào đơn hàng' });
+      }
+
+      const savedOrder = await createOrder.save();
+      console.log('--Created an order');
+
+      await User.findOneAndUpdate({ email: savedOrder.email }, { $inc: { numberOrder: 1 } }, { new: true });
+
+      return res.status(201).json({
+        message: 'Đã thêm đơn hàng',
+        order: savedOrder,
+      });
+    } catch (err) {
+      console.error('Error creating order:', err);
+      next(err);
+    }
   }
 
   // update order
@@ -109,57 +92,62 @@ class OrderController {
 
   // delete permanent order
   // [DELETE] /order/delete-permanent?id=...
-  deletePermanentOrder(req, res, next) {
-    if (!req.query.id) {
-      return res.status(400).json({ message: 'Thiếu ID đơn hàng' });
-    }
+  async deletePermanentOrder(req, res, next) {
+    try {
+      const { id } = req.query;
+      if (!id) {
+        return res.status(400).json({ message: 'Thiếu ID đơn hàng' });
+      }
 
-    Order.deleteOne({ _id: req.query.id })
-      .then((result) => {
-        console.log(result);
+      const order = await Order.findById(id);
+      if (!order) {
+        return res.status(404).json({ message: 'Không tìm thấy đơn hàng để xóa' });
+      }
 
-        if (result.deletedCount === 0) {
-          return res.status(404).json({ message: 'Không tìm thấy đơn hàng để xóa' });
-        }
+      const result = await Order.deleteOne({ _id: id });
+      if (result.deletedCount === 0) {
+        return res.status(404).json({ message: 'Không tìm thấy đơn hàng để xóa' });
+      }
 
-        console.log(`--Deleted permanent order with id: ${req.query.id}`);
-        res.status(200).json({ message: 'Đã xóa đơn hàng này' });
-      })
-      .catch((error) => {
-        console.error('Lỗi khi xóa đơn hàng:', error);
-        next(error);
+      await User.findOneAndUpdate({ email: order.email }, { $inc: { numberOrder: -1 } }, { new: true });
+
+      console.log(`--Deleted permanent order with id: ${id}`);
+      res.status(200).json({
+        message: `Đã xóa đơn hàng và cập nhật số lượng đơn hàng của: ${order.email}`,
       });
+    } catch (err) {
+      console.error('Lỗi khi xóa đơn hàng:', err);
+      next(err);
+    }
   }
 
   // [DELETE] /orders/delete-permanent-orders
-  deleteManyOrders(req, res, next) {
-    const { ids } = req.body;
+  async deleteManyOrders(req, res, next) {
+    try {
+      const { ids, email } = req.body;
 
-    if (!Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).json({
-        message: 'Danh sách ID không hợp lệ',
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: 'Danh sách ID không hợp lệ' });
+      }
+
+      const result = await Order.deleteMany({ _id: { $in: ids } });
+
+      if (result.deletedCount === 0) {
+        return res.status(404).json({ message: 'Không tìm thấy đơn hàng để xóa' });
+      }
+
+      if (email) {
+        await User.findOneAndUpdate({ email }, { numberOrder: 0 }, { new: true });
+      }
+
+      console.log(`--Deleted ${result.deletedCount} orders for ${email || 'unknown user'}`);
+      res.status(200).json({
+        message: `Đã xóa ${result.deletedCount} đơn hàng và đặt lại số đơn hàng về 0`,
       });
+    } catch (err) {
+      console.error('Error deleting orders:', err);
+      next(err);
     }
-
-    Order.deleteMany({ _id: { $in: ids } })
-      .then((result) => {
-        if (result.deletedCount > 0) {
-          res.status(200).json({
-            message: `Đã xóa ${result.deletedCount} đơn hàng`,
-          });
-        } else {
-          res.status(404).json({
-            message: 'Không tìm thấy đơn hàng để xóa',
-          });
-        }
-      })
-      .catch((err) => {
-        console.error('Error deleting orders:', err);
-        res.status(500).json({
-          message: 'Lỗi khi xóa đơn hàng',
-          error: err.message,
-        });
-      });
   }
 }
 

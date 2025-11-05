@@ -23,7 +23,7 @@ function NotifyTooltip({ header, content, linkTo, nameBtn }) {
                         src={images.noData}
                         alt="img-no-data"
                     />
-                    <p className={cx('m-0 fs-5 opacity-50')}>{content}</p>
+                    {!user && <p className={cx('m-0 fs-5 opacity-50')}>{content}</p>}
                 </div>
                 {!user && (
                     <Link
